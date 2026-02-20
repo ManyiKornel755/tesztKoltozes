@@ -1,128 +1,133 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const { authenticate } = require('../middlewares/auth');
-
 const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
+const User = require('../models/User');
+const jwtConfig = require('../config/jwt');
+const authenticate = require('../middlewares/authenticate');
+const authorize = require('../middlewares/authorize');
 
-// Login
-router.post('/login', async (req, res, next) => {
+// POST /api/auth/login
+router.post('/login', [
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').notEmpty().withMessage('Password is required')
+], async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: { message: 'Validation failed', details: errors.array() } });
+    }
+
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        error: 'Email and password are required',
-        status: 400
-      });
-    }
-
-    // Find user by email
     const user = await User.findByEmail(email);
-
     if (!user) {
-      return res.status(401).json({
-        error: 'Invalid email or password',
-        status: 401
-      });
+      return res.status(401).json({ error: { message: 'Invalid credentials' } });
     }
 
-    // Verify password
-    const isValidPassword = await User.verifyPassword(password, user.password);
-
-    if (!isValidPassword) {
-      return res.status(401).json({
-        error: 'Invalid email or password',
-        status: 401
-      });
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: { message: 'Invalid credentials' } });
     }
 
-    // Generate JWT token
+    const roles = await User.getRoles(user.id);
+    const roleNames = roles.map(r => r.name);
+
     const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { 
+        id: user.id, 
+        email: user.email, 
+        roles: roleNames 
+      },
+      jwtConfig.secret,
+      { expiresIn: jwtConfig.expiresIn }
     );
-
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
 
     res.json({
       token,
-      user: userWithoutPassword
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        roles: roleNames
+      }
     });
   } catch (error) {
     next(error);
   }
 });
 
-// Register (optional - if you want to allow self-registration)
-router.post('/register', async (req, res, next) => {
-  try {
-    const { name, email, password, phone, address } = req.body;
+// POST /api/auth/register (admin only)
+router.post('/register', 
+  authenticate,
+  authorize('admin'),
+  [
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('first_name').notEmpty().withMessage('First name is required'),
+    body('last_name').notEmpty().withMessage('Last name is required')
+  ],
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ error: { message: 'Validation failed', details: errors.array() } });
+      }
 
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        error: 'Name, email, and password are required',
-        status: 400
+      const { email, password, first_name, last_name, phone, is_member } = req.body;
+
+      const existingUser = await User.findByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ error: { message: 'Email already exists' } });
+      }
+
+      const password_hash = await bcrypt.hash(password, 10);
+
+      const newUser = await User.create({
+        email,
+        password_hash,
+        first_name,
+        last_name,
+        phone,
+        is_member: is_member || false
       });
-    }
 
-    // Check if user already exists
-    const existingUser = await User.findByEmail(email);
-
-    if (existingUser) {
-      return res.status(409).json({
-        error: 'User with this email already exists',
-        status: 409
+      res.status(201).json({
+        message: 'User created successfully',
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          firstName: newUser.first_name,
+          lastName: newUser.last_name
+        }
       });
+    } catch (error) {
+      next(error);
     }
-
-    // Create new user
-    const user = await User.create({
-      name,
-      email,
-      password,
-      phone,
-      address,
-      membership_status: 'inactive'
-    });
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
-
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
-    res.status(201).json({
-      token,
-      user: userWithoutPassword
-    });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
-// Get current user (me)
+// GET /api/auth/me
 router.get('/me', authenticate, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
-
     if (!user) {
-      return res.status(404).json({
-        error: 'User not found',
-        status: 404
-      });
+      return res.status(404).json({ error: { message: 'User not found' } });
     }
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
+    const roles = await User.getRoles(user.id);
 
-    res.json(userWithoutPassword);
+    res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      phone: user.phone,
+      isMember: user.is_member,
+      roles: roles.map(r => r.name)
+    });
   } catch (error) {
     next(error);
   }

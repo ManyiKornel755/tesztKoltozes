@@ -1,70 +1,58 @@
 const sgMail = require('@sendgrid/mail');
 require('dotenv').config();
 
-// Initialize SendGrid with API key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
-const sendEmail = async ({ to, subject, html, text }) => {
-  try {
+class EmailService {
+  static async sendEmail(to, subject, text, html = null) {
+    if (!process.env.SENDGRID_API_KEY) {
+      console.warn('SendGrid API key not configured. Email not sent.');
+      return { success: false, message: 'Email service not configured' };
+    }
+
     const msg = {
       to,
-      from: process.env.SENDGRID_FROM_EMAIL,
+      from: process.env.FROM_EMAIL || 'noreply@wavealert.com',
       subject,
-      html,
-      text: text || undefined
+      text,
+      html: html || text
     };
 
-    const result = await sgMail.send(msg);
-    console.log(`Email sent to ${to}`);
-    return result;
-  } catch (error) {
-    console.error('Error sending email:', error);
-    if (error.response) {
-      console.error('SendGrid error response:', error.response.body);
+    try {
+      await sgMail.send(msg);
+      console.log(`Email sent to ${to}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Email sending failed:', error.message);
+      return { success: false, message: error.message };
     }
-    throw error;
   }
-};
 
-const sendBulkEmail = async (emails) => {
-  try {
-    const messages = emails.map(({ to, subject, html, text }) => ({
+  static async sendBulkEmail(recipients, subject, text, html = null) {
+    if (!process.env.SENDGRID_API_KEY) {
+      console.warn('SendGrid API key not configured. Emails not sent.');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    const messages = recipients.map(to => ({
       to,
-      from: process.env.SENDGRID_FROM_EMAIL,
+      from: process.env.FROM_EMAIL || 'noreply@wavealert.com',
       subject,
-      html,
-      text: text || undefined
+      text,
+      html: html || text
     }));
 
-    const result = await sgMail.send(messages);
-    console.log(`Bulk email sent to ${emails.length} recipients`);
-    return result;
-  } catch (error) {
-    console.error('Error sending bulk email:', error);
-    if (error.response) {
-      console.error('SendGrid error response:', error.response.body);
+    try {
+      await sgMail.send(messages);
+      console.log(`Bulk email sent to ${recipients.length} recipients`);
+      return { success: true, count: recipients.length };
+    } catch (error) {
+      console.error('Bulk email sending failed:', error.message);
+      return { success: false, message: error.message };
     }
-    throw error;
   }
-};
+}
 
-const sendNewsletterToRecipients = async (subject, body, recipients) => {
-  try {
-    const emails = recipients.map(recipient => ({
-      to: recipient.email,
-      subject,
-      html: body
-    }));
-
-    return await sendBulkEmail(emails);
-  } catch (error) {
-    console.error('Error sending newsletter:', error);
-    throw error;
-  }
-};
-
-module.exports = {
-  sendEmail,
-  sendBulkEmail,
-  sendNewsletterToRecipients
-};
+module.exports = EmailService;

@@ -1,25 +1,25 @@
 const { pool } = require('../config/database');
 
-class Message {
+class Document {
   static async getAll() {
     const [rows] = await pool.query(
-      'SELECT * FROM messages ORDER BY created_at DESC'
+      'SELECT * FROM documents ORDER BY created_at DESC'
     );
     return rows;
   }
 
   static async findById(id) {
     const [rows] = await pool.query(
-      'SELECT * FROM messages WHERE id = ?',
+      'SELECT * FROM documents WHERE id = ?',
       [id]
     );
     return rows[0] || null;
   }
 
-  static async create({ title, content, status = 'draft', created_by = null }) {
+  static async create({ title, description, file_path, category, uploaded_by = null }) {
     const [result] = await pool.query(
-      'INSERT INTO messages (title, content, status, created_by) VALUES (?, ?, ?, ?)',
-      [title, content, status, created_by]
+      'INSERT INTO documents (title, description, file_path, category, uploaded_by) VALUES (?, ?, ?, ?, ?)',
+      [title, description || null, file_path, category || null, uploaded_by]
     );
     return this.findById(result.insertId);
   }
@@ -42,7 +42,7 @@ class Message {
     values.push(id);
 
     await pool.query(
-      `UPDATE messages SET ${fields.join(', ')} WHERE id = ?`,
+      `UPDATE documents SET ${fields.join(', ')} WHERE id = ?`,
       values
     );
 
@@ -51,19 +51,11 @@ class Message {
 
   static async delete(id) {
     const [result] = await pool.query(
-      'DELETE FROM messages WHERE id = ?',
+      'DELETE FROM documents WHERE id = ?',
       [id]
     );
     return result.affectedRows > 0;
   }
-
-  static async markAsSent(id) {
-    await pool.query(
-      'UPDATE messages SET status = ?, sent_at = NOW() WHERE id = ?',
-      ['sent', id]
-    );
-    return this.findById(id);
-  }
 }
 
-module.exports = Message;
+module.exports = Document;

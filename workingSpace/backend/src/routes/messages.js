@@ -1,15 +1,14 @@
 const express = require('express');
-const Message = require('../models/Message');
-const { authenticate, isAdmin } = require('../middlewares/auth');
-const { sendNewsletterToRecipients } = require('../services/emailService');
-
 const router = express.Router();
-
-// All routes require authentication
-router.use(authenticate);
+const { body, validationResult } = require('express-validator');
+const Message = require('../models/Message');
+const User = require('../models/User');
+const EmailService = require('../services/emailService');
+const authenticate = require('../middlewares/authenticate');
+const authorize = require('../middlewares/authorize');
 
 // GET /api/messages
-router.get('/', async (req, res, next) => {
+router.get('/', authenticate, async (req, res, next) => {
   try {
     const messages = await Message.getAll();
     res.json(messages);
@@ -19,61 +18,92 @@ router.get('/', async (req, res, next) => {
 });
 
 // GET /api/messages/:id
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', authenticate, async (req, res, next) => {
   try {
     const message = await Message.findById(req.params.id);
-
     if (!message) {
-      return res.status(404).json({
-        error: 'Message not found',
-        status: 404
-      });
+      return res.status(404).json({ error: { message: 'Message not found' } });
     }
-
-    // Get recipients
-    const recipients = await Message.getRecipients(req.params.id);
-    message.recipients = recipients;
-
     res.json(message);
   } catch (error) {
     next(error);
   }
 });
 
-// POST /api/messages (admin)
-router.post('/', isAdmin, async (req, res, next) => {
-  try {
-    const { subject, body } = req.body;
+// POST /api/messages (admin only)
+router.post('/', 
+  authenticate, 
+  authorize('admin'),
+  [
+    body('title').notEmpty().withMessage('Title is required'),
+    body('content').notEmpty().withMessage('Content is required')
+  ],
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ error: { message: 'Validation failed', details: errors.array() } });
+      }
 
-    if (!subject || !body) {
-      return res.status(400).json({
-        error: 'Subject and body are required',
-        status: 400
+      const { title, content, status } = req.body;
+
+      const newMessage = await Message.create({
+        title,
+        content,
+        status: status || 'draft',
+        created_by: req.user.id
       });
+
+      res.status(201).json(newMessage);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// POST /api/messages/:id/send (admin only)
+router.post('/:id/send', authenticate, authorize('admin'), async (req, res, next) => {
+  try {
+    const message = await Message.findById(req.params.id);
+    if (!message) {
+      return res.status(404).json({ error: { message: 'Message not found' } });
     }
 
-    const message = await Message.create({
-      subject,
-      body,
-      created_by_user_id: req.user.id
-    });
+    const users = await User.getAll();
+    const recipients = users.map(u => u.email);
 
-    res.status(201).json(message);
+    const emailResult = await EmailService.sendBulkEmail(
+      recipients,
+      message.title,
+      message.content
+    );
+
+    await Message.markAsSent(req.params.id);
+
+    res.json({
+      message: 'Message sent successfully',
+      recipientCount: recipients.length,
+      emailResult
+    });
   } catch (error) {
     next(error);
   }
 });
 
-// PUT /api/messages/:id (admin)
-router.put('/:id', isAdmin, async (req, res, next) => {
+// PATCH /api/messages/:id (admin only)
+router.patch('/:id', authenticate, authorize('admin'), async (req, res, next) => {
   try {
-    const { subject, body, status } = req.body;
+    const { title, content, status } = req.body;
 
     const updatedMessage = await Message.update(req.params.id, {
-      subject,
-      body,
+      title,
+      content,
       status
     });
+
+    if (!updatedMessage) {
+      return res.status(404).json({ error: { message: 'Message not found' } });
+    }
 
     res.json(updatedMessage);
   } catch (error) {
@@ -81,84 +111,14 @@ router.put('/:id', isAdmin, async (req, res, next) => {
   }
 });
 
-// DELETE /api/messages/:id (admin)
-router.delete('/:id', isAdmin, async (req, res, next) => {
+// DELETE /api/messages/:id (admin only)
+router.delete('/:id', authenticate, authorize('admin'), async (req, res, next) => {
   try {
-    await Message.delete(req.params.id);
+    const deleted = await Message.delete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: { message: 'Message not found' } });
+    }
     res.json({ message: 'Message deleted successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// POST /api/messages/:id/recipients (admin) - Add recipients
-router.post('/:id/recipients', isAdmin, async (req, res, next) => {
-  try {
-    const { userIds } = req.body;
-
-    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({
-        error: 'User IDs array is required',
-        status: 400
-      });
-    }
-
-    const recipients = await Message.addRecipients(req.params.id, userIds);
-    res.json(recipients);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// DELETE /api/messages/:id/recipients/:userId (admin) - Remove recipient
-router.delete('/:id/recipients/:userId', isAdmin, async (req, res, next) => {
-  try {
-    await Message.removeRecipient(req.params.id, req.params.userId);
-    res.json({ message: 'Recipient removed successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// POST /api/messages/:id/send (admin) - Send message/newsletter
-router.post('/:id/send', isAdmin, async (req, res, next) => {
-  try {
-    const message = await Message.findById(req.params.id);
-
-    if (!message) {
-      return res.status(404).json({
-        error: 'Message not found',
-        status: 404
-      });
-    }
-
-    if (message.status === 'sent') {
-      return res.status(400).json({
-        error: 'Message has already been sent',
-        status: 400
-      });
-    }
-
-    // Get recipients
-    const recipients = await Message.getRecipients(req.params.id);
-
-    if (recipients.length === 0) {
-      return res.status(400).json({
-        error: 'No recipients added to this message',
-        status: 400
-      });
-    }
-
-    // Send emails
-    await sendNewsletterToRecipients(message.subject, message.body, recipients);
-
-    // Update message status
-    await Message.send(req.params.id);
-
-    res.json({
-      message: 'Newsletter sent successfully',
-      recipients_count: recipients.length
-    });
   } catch (error) {
     next(error);
   }
