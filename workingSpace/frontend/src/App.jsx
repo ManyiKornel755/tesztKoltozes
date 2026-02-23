@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Members from './pages/Members';
 import Users from './pages/Users';
 import Roles from './pages/Roles';
+import Groups from './pages/Groups';
 import Trainings from './pages/Trainings';
 import Messages from './pages/Messages';
 import RaceReports from './pages/RaceReports';
@@ -45,7 +46,13 @@ function App() {
               <Roles />
             </AdminRoute>
           } />
-          
+
+          <Route path="/groups" element={
+            <AdminRoute>
+              <Groups />
+            </AdminRoute>
+          } />
+
           <Route path="/trainings" element={
             <PrivateRoute>
               <Trainings />

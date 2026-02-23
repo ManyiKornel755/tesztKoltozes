@@ -22,6 +22,7 @@ const Navbar = () => {
           <Link to="/messages">Messages</Link>
           {isAdmin() && <Link to="/users">Users</Link>}
           {isAdmin() && <Link to="/roles">Roles</Link>}
+          {isAdmin() && <Link to="/groups">Csoportok</Link>}
         </div>
         <div>
           <Link to="/profile">{user?.firstName} {user?.lastName}</Link>
