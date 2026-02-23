@@ -6,9 +6,9 @@ const Roles = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Roles Management</h1>
+        <h1>Szerepkörök kezelése</h1>
         <div className="card">
-          <p>Roles management functionality coming soon...</p>
+          <p>A szerepkörök kezelése hamarosan elérhető...</p>
         </div>
       </div>
     </div>

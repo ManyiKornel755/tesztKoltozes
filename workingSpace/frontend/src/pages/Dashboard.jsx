@@ -35,18 +35,18 @@ const Dashboard = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Dashboard</h1>
+        <h1>Irányítópult</h1>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginTop: '20px' }}>
           <div className="card">
-            <h3>Members</h3>
+            <h3>Tagok</h3>
             <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#007bff' }}>{stats.members}</p>
           </div>
           <div className="card">
-            <h3>Trainings</h3>
+            <h3>Edzések</h3>
             <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#28a745' }}>{stats.trainings}</p>
           </div>
           <div className="card">
-            <h3>Race Reports</h3>
+            <h3>Versenyjelentések</h3>
             <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffc107' }}>{stats.raceReports}</p>
           </div>
         </div>

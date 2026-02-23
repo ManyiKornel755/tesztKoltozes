@@ -15,18 +15,18 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <Link to="/">Dashboard</Link>
-          <Link to="/members">Members</Link>
-          <Link to="/trainings">Trainings</Link>
-          <Link to="/race-reports">Race Reports</Link>
-          <Link to="/messages">Messages</Link>
-          {isAdmin() && <Link to="/users">Users</Link>}
-          {isAdmin() && <Link to="/roles">Roles</Link>}
+          <Link to="/">Irányítópult</Link>
+          <Link to="/members">Tagok</Link>
+          <Link to="/trainings">Edzések</Link>
+          <Link to="/race-reports">Versenyjelentések</Link>
+          <Link to="/messages">Üzenetek</Link>
+          {isAdmin() && <Link to="/users">Felhasználók</Link>}
+          {isAdmin() && <Link to="/roles">Szerepkörök</Link>}
           {isAdmin() && <Link to="/groups">Csoportok</Link>}
         </div>
         <div>
           <Link to="/profile">{user?.firstName} {user?.lastName}</Link>
-          <button onClick={handleLogout} className="btn" style={{ marginLeft: '10px' }}>Logout</button>
+          <button onClick={handleLogout} className="btn" style={{ marginLeft: '10px' }}>Kijelentkezés</button>
         </div>
       </div>
     </nav>

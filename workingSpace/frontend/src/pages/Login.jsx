@@ -17,14 +17,14 @@ const Login = () => {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'Login failed');
+      setError(err.response?.data?.error?.message || 'Bejelentkezés sikertelen');
     }
   };
 
   return (
     <div className="container" style={{ maxWidth: '400px', marginTop: '100px' }}>
       <div className="card">
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>WaveAlert Login</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>WaveAlert Bejelentkezés</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
@@ -36,7 +36,7 @@ const Login = () => {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>Jelszó</label>
             <input
               type="password"
               value={password}
@@ -46,7 +46,7 @@ const Login = () => {
           </div>
           {error && <div className="error">{error}</div>}
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>
-            Login
+            Bejelentkezés
           </button>
         </form>
       </div>

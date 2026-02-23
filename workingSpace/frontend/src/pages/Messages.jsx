@@ -22,13 +22,13 @@ const Messages = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Messages</h1>
+        <h1>Üzenetek</h1>
         <div className="card">
           {messages.map((message) => (
             <div key={message.id} style={{ padding: '15px', borderBottom: '1px solid #ddd' }}>
               <h3>{message.title}</h3>
               <p>{message.content}</p>
-              <small>Status: {message.status} | {new Date(message.created_at).toLocaleString()}</small>
+              <small>Státusz: {message.status} | {new Date(message.created_at).toLocaleString('hu-HU')}</small>
             </div>
           ))}
         </div>

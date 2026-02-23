@@ -21,7 +21,7 @@ const Members = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this member?')) return;
+    if (!window.confirm('Biztosan törli ezt a tagot?')) return;
 
     try {
       await api.delete(`/members/${id}`);
@@ -35,15 +35,15 @@ const Members = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Members</h1>
+        <h1>Tagok</h1>
         <div className="card">
           <table>
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Név</th>
                 <th>Email</th>
-                <th>Phone</th>
-                {isAdmin() && <th>Actions</th>}
+                <th>Telefon</th>
+                {isAdmin() && <th>Műveletek</th>}
               </tr>
             </thead>
             <tbody>
@@ -51,10 +51,10 @@ const Members = () => {
                 <tr key={member.id}>
                   <td>{member.first_name} {member.last_name}</td>
                   <td>{member.email}</td>
-                  <td>{member.phone || 'N/A'}</td>
+                  <td>{member.phone || '—'}</td>
                   {isAdmin() && (
                     <td>
-                      <button onClick={() => handleDelete(member.id)} className="btn btn-danger">Delete</button>
+                      <button onClick={() => handleDelete(member.id)} className="btn btn-danger">Törlés</button>
                     </td>
                   )}
                 </tr>

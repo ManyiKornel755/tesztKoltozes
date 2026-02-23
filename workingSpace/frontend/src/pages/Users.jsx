@@ -6,9 +6,9 @@ const Users = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Users Management</h1>
+        <h1>Felhasználók kezelése</h1>
         <div className="card">
-          <p>Users management functionality coming soon...</p>
+          <p>A felhasználók kezelése hamarosan elérhető...</p>
         </div>
       </div>
     </div>

@@ -6,7 +6,7 @@ const AdminRoute = ({ children }) => {
   const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Betöltés...</div>;
   }
 
   if (!user) {

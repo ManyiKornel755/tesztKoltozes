@@ -21,7 +21,7 @@ const Trainings = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this training?')) return;
+    if (!window.confirm('Biztosan törli ezt az edzést?')) return;
 
     try {
       await api.delete(`/trainings/${id}`);
@@ -35,26 +35,26 @@ const Trainings = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Trainings</h1>
+        <h1>Edzések</h1>
         <div className="card">
           <table>
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Location</th>
-                {isAdmin() && <th>Actions</th>}
+                <th>Cím</th>
+                <th>Dátum</th>
+                <th>Helyszín</th>
+                {isAdmin() && <th>Műveletek</th>}
               </tr>
             </thead>
             <tbody>
               {trainings.map((training) => (
                 <tr key={training.id}>
                   <td>{training.title}</td>
-                  <td>{new Date(training.event_date).toLocaleString()}</td>
-                  <td>{training.location || 'N/A'}</td>
+                  <td>{new Date(training.event_date).toLocaleString('hu-HU')}</td>
+                  <td>{training.location || '—'}</td>
                   {isAdmin() && (
                     <td>
-                      <button onClick={() => handleDelete(training.id)} className="btn btn-danger">Delete</button>
+                      <button onClick={() => handleDelete(training.id)} className="btn btn-danger">Törlés</button>
                     </td>
                   )}
                 </tr>

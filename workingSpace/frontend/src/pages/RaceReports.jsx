@@ -42,31 +42,31 @@ const RaceReports = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Race Reports</h1>
+        <h1>Versenyjelentések</h1>
         <div className="card">
           <table>
             <thead>
               <tr>
-                <th>Race Name</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>Verseny neve</th>
+                <th>Dátum</th>
+                <th>Helyszín</th>
+                <th>Státusz</th>
+                <th>Műveletek</th>
               </tr>
             </thead>
             <tbody>
               {reports.map((report) => (
                 <tr key={report.id}>
                   <td>{report.race_name}</td>
-                  <td>{new Date(report.race_date).toLocaleDateString()}</td>
-                  <td>{report.location || 'N/A'}</td>
+                  <td>{new Date(report.race_date).toLocaleDateString('hu-HU')}</td>
+                  <td>{report.location || '—'}</td>
                   <td>{report.status}</td>
                   <td>
-                    <button 
-                      onClick={() => handleExport(report.id, report.race_name)} 
+                    <button
+                      onClick={() => handleExport(report.id, report.race_name)}
                       className="btn btn-primary"
                     >
-                      Export PDF
+                      PDF exportálás
                     </button>
                   </td>
                 </tr>
