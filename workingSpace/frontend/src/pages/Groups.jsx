@@ -166,7 +166,7 @@ const Groups = () => {
     <div>
       <Navbar />
       <div className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="page-header">
           <h1>Csoportok</h1>
           <button onClick={() => setShowCreateModal(true)} className="btn btn-primary">
             Csoport létrehozása
@@ -176,7 +176,7 @@ const Groups = () => {
         {error && <div className="alert alert-danger">{error}</div>}
 
         <div className="card">
-          <table>
+          <table className="data-table">
             <thead>
               <tr>
                 <th>Csoport neve</th>
@@ -187,7 +187,7 @@ const Groups = () => {
             <tbody>
               {groups.length === 0 ? (
                 <tr>
-                  <td colSpan="3" style={{ textAlign: 'center' }}>Nincs csoport</td>
+                  <td colSpan="3" className="text-center">Nincs csoport</td>
                 </tr>
               ) : (
                 groups.map((group) => (
@@ -195,7 +195,7 @@ const Groups = () => {
                     <td>{group.name}</td>
                     <td>{group.member_count || 0}</td>
                     <td>
-                      <button onClick={() => openEditModal(group)} className="btn btn-secondary" style={{ marginRight: '10px' }}>
+                      <button onClick={() => openEditModal(group)} className="btn btn-secondary btn-mr">
                         Szerkesztés
                       </button>
                       <button onClick={() => handleDeleteGroup(group.id)} className="btn btn-danger">
@@ -211,7 +211,7 @@ const Groups = () => {
 
         {showCreateModal && (
           <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
               <h2>Új csoport létrehozása</h2>
               <form onSubmit={handleCreateGroup}>
                 <div className="form-group">
@@ -237,10 +237,10 @@ const Groups = () => {
 
         {showEditModal && selectedGroup && (
           <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px', maxHeight: '90vh', overflow: 'auto' }}>
+            <div className="modal-box modal-box-wide" onClick={(e) => e.stopPropagation()}>
               <h2>Csoport szerkesztése: {selectedGroup.name}</h2>
 
-              <form onSubmit={handleUpdateGroupName} style={{ marginBottom: '30px' }}>
+              <form onSubmit={handleUpdateGroupName} className="mb-12">
                 <div className="form-group">
                   <label>Csoport neve:</label>
                   <input
@@ -257,8 +257,8 @@ const Groups = () => {
               {groupMembers.length === 0 ? (
                 <p>Még nincsenek tagok ebben a csoportban</p>
               ) : (
-                <div style={{ marginBottom: '20px' }}>
-                  <table style={{ width: '100%' }}>
+                <div className="mb-12">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>Név</th>
@@ -274,8 +274,7 @@ const Groups = () => {
                           <td>
                             <button
                               onClick={() => handleRemoveMember(member.id)}
-                              className="btn btn-danger"
-                              style={{ padding: '5px 10px', fontSize: '0.9em' }}
+                              className="btn btn-danger btn-xs"
                             >
                               Eltávolítás
                             </button>
@@ -288,7 +287,7 @@ const Groups = () => {
               )}
 
               <h3>Tagok hozzáadása</h3>
-              <p style={{ fontSize: '0.9em', color: '#666' }}>
+              <p className="hint-text">
                 Válassza ki a hozzáadandó felhasználókat (max 50 egyszerre). Kiválasztva: {selectedUsers.length}
               </p>
 
@@ -296,15 +295,15 @@ const Groups = () => {
                 <p>Minden felhasználó már tagja ennek a csoportnak</p>
               ) : (
                 <>
-                  <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #ddd', padding: '10px', marginBottom: '10px' }}>
+                  <div className="groups-user-list">
                     {availableUsers.map((user) => (
-                      <div key={user.id} style={{ marginBottom: '8px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                      <div key={user.id} className="user-check-item">
+                        <label className="user-check-label">
                           <input
                             type="checkbox"
                             checked={selectedUsers.includes(user.id)}
                             onChange={() => handleUserSelection(user.id)}
-                            style={{ marginRight: '10px' }}
+                            className="checkbox-mr"
                           />
                           <span>{user.first_name} {user.last_name} ({user.email})</span>
                         </label>
@@ -321,7 +320,7 @@ const Groups = () => {
                 </>
               )}
 
-              <div className="modal-buttons" style={{ marginTop: '20px' }}>
+              <div className="modal-buttons">
                 <button onClick={() => setShowEditModal(false)} className="btn btn-secondary">
                   Bezárás
                 </button>
@@ -330,65 +329,6 @@ const Groups = () => {
           </div>
         )}
       </div>
-
-      <style>{`
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-        }
-
-        .modal-content {
-          background: white;
-          padding: 30px;
-          border-radius: 8px;
-          max-width: 500px;
-          width: 90%;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-buttons {
-          display: flex;
-          gap: 10px;
-          margin-top: 20px;
-        }
-
-        .form-group {
-          margin-bottom: 15px;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 5px;
-          font-weight: bold;
-        }
-
-        .form-group input {
-          width: 100%;
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
-
-        .alert {
-          padding: 12px;
-          margin-bottom: 20px;
-          border-radius: 4px;
-        }
-
-        .alert-danger {
-          background-color: #f8d7da;
-          color: #721c24;
-          border: 1px solid #f5c6cb;
-        }
-      `}</style>
     </div>
   );
 };

@@ -132,3 +132,436 @@ table th {
 .navbar a:hover {
   text-decoration: underline;
 }
+
+.navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-user-section {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logout-btn {
+  margin-left: 10px;
+}
+
+/* ===== PAGE LAYOUT ===== */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* ===== MODAL ===== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-box-wide {
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ===== FORM INPUT ===== */
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+/* ===== DATA TABLE ===== */
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead tr {
+  border-bottom: 2px solid #ddd;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 8px;
+}
+
+.data-table td {
+  padding: 8px;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.data-table tbody tr.clickable {
+  cursor: pointer;
+}
+
+/* ===== BUTTON ROW ===== */
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== STATUS BADGES ===== */
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: white;
+}
+
+.badge-sm {
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+.badge-active   { background: #4caf50; }
+.badge-inactive { background: #f44336; }
+.badge-pending  { background: #ff9800; }
+.badge-sent     { background: #4caf50; }
+.badge-draft    { background: #ff9800; }
+.badge-upcoming { background: #2196f3; }
+.badge-past     { background: #9e9e9e; }
+
+/* ===== GRID LAYOUTS ===== */
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ===== FEEDBACK MESSAGES ===== */
+
+.feedback {
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  border: 1px solid;
+}
+
+.feedback-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+.feedback-error {
+  background: #ffebee;
+  color: #c62828;
+  border-color: #ef9a9a;
+}
+
+.msg-feedback {
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.msg-feedback-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.msg-feedback-error {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* ===== DASHBOARD ===== */
+
+.stats-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.stat-label {
+  margin: 8px 0 0;
+}
+
+.card-mb-lg {
+  margin-bottom: 30px;
+}
+
+.list-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.list-item p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* ===== LOGIN ===== */
+
+.login-page-container {
+  max-width: 400px;
+  margin-top: 100px;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.btn-full {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* ===== MESSAGES PAGE ===== */
+
+.message-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.message-item-body {
+  flex: 1;
+  cursor: pointer;
+}
+
+.message-item-body p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.message-item-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.message-item-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.message-detail-content {
+  color: #555;
+  line-height: 1.6;
+}
+
+.recipients-scroll {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
+.recipient-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+/* ===== TRAININGS PAGE ===== */
+
+.training-card {
+  cursor: pointer;
+  position: relative;
+}
+
+.training-delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+/* ===== EMAILS PAGE ===== */
+
+.email-member-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.email-address {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.email-small {
+  font-size: 0.85rem;
+  padding: 2px 0;
+}
+
+.scroll-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.scroll-list-sm {
+  max-height: 120px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+
+/* ===== USERS PAGE ===== */
+
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.btn-xs {
+  padding: 2px 8px;
+  font-size: 0.8rem;
+}
+
+.role-assign-row {
+  display: flex;
+  gap: 8px;
+}
+
+.role-select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.hr-divider {
+  margin: 20px 0;
+}
+
+/* ===== GROUPS PAGE ===== */
+
+.groups-user-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.user-check-item {
+  margin-bottom: 8px;
+}
+
+.user-check-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-mr {
+  margin-right: 10px;
+}
+
+.btn-mr {
+  margin-right: 10px;
+}
+
+.hint-text {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.alert {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* ===== UTILITY ===== */
+
+.mt-16 { margin-top: 16px; }
+.mb-12 { margin-bottom: 12px; }
+.ml-8  { margin-left: 8px; }
+.text-center    { text-align: center; }
+.text-muted     { color: #555; }
+.text-secondary { color: #777; }
+.text-faint     { color: #999; }

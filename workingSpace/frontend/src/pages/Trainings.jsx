@@ -49,38 +49,33 @@ export default function Trainings() {
     catch(err) { alert('Hiba!'); }
   }
 
-  const mbd = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-  const mbx = { background: 'white', borderRadius: '8px', padding: '30px', maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto' };
-  const inp = { width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', boxSizing: 'border-box' };
   return (
     <div><Navbar />
-      <div className="container" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="container">
+        <div className="page-header">
           <h1>Edzések</h1>
           {isAdmin() && <button className="btn" onClick={() => setShowCreate(true)}>Új edzés</button>}
         </div>
         {loading && <p>Betöltés...</p>}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+        <div className="grid-3">
           {trainings.map(t => {
             const isUpcoming = new Date(t.event_date) >= new Date();
             return (
-              <div key={t.id} className="card" style={{ padding: '20px', cursor: 'pointer', position: 'relative' }}
-                onClick={() => openDetail(t)}>
-                <h3 style={{ margin: '0 0 8px' }}>{t.title}</h3>
-                <p style={{ margin: '4px 0', color: '#555', fontSize: '0.9rem' }}>{new Date(t.event_date).toLocaleString('hu-HU')}</p>
-                <p style={{ margin: '4px 0', color: '#777', fontSize: '0.85rem' }}>{t.location}</p>
-                <span style={{ display: 'inline-block', marginTop: '8px', padding: '2px 10px', borderRadius: '12px', fontSize: '0.8rem', background: isUpcoming ? '#2196f3' : '#9e9e9e', color: 'white' }}>
+              <div key={t.id} className="card training-card" onClick={() => openDetail(t)}>
+                <h3>{t.title}</h3>
+                <p className="text-muted">{new Date(t.event_date).toLocaleString('hu-HU')}</p>
+                <p className="text-secondary">{t.location}</p>
+                <span className={`badge badge-sm badge-${isUpcoming ? 'upcoming' : 'past'}`}>
                   {isUpcoming ? 'Várható' : 'Lezárult'}
                 </span>
                 {isAdmin() && (
-                  <button className="btn btn-danger" style={{ position: 'absolute', top: '10px', right: '10px', padding: '4px 10px', fontSize: '0.8rem' }}
-                    onClick={(e) => handleDelete(t.id, e)}>Törlés</button>)}
+                  <button className="btn btn-danger training-delete-btn" onClick={(e) => handleDelete(t.id, e)}>Törlés</button>)}
               </div>);
           })}
         </div>
         {selectedTraining && (
-          <div style={mbd} onClick={() => { setSelectedTraining(null); setTrainingDetail(null); }}>
-            <div style={mbx} onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => { setSelectedTraining(null); setTrainingDetail(null); }}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>{selectedTraining.title}</h2>
               <p><strong>Időpont:</strong> {new Date(selectedTraining.event_date).toLocaleString('hu-HU')}</p>
               <p><strong>Helyszín:</strong> {selectedTraining.location}</p>
@@ -89,33 +84,34 @@ export default function Trainings() {
                 <p><strong>Részt vevők:</strong> {trainingDetail.participants_count ?? (trainingDetail.participants ? trainingDetail.participants.length : 0)}</p></>
               ) : <p>Betöltés...</p>}
               {!isAdmin() && (
-                <div style={{ marginTop: '16px' }}>
+                <div className="mt-16">
                   {registeredEvents.includes(selectedTraining.id) ? (
                     <button className="btn btn-danger" onClick={() => handleUnregister(selectedTraining.id)}>Leiratkozás</button>
                   ) : (<button className="btn" onClick={() => handleRegister(selectedTraining.id)}>Jelentkezés</button>)}
                 </div>)}
-              <button className="btn" style={{ marginTop: '16px', marginLeft: '8px' }}
-                onClick={() => { setSelectedTraining(null); setTrainingDetail(null); }}>Bezárás</button>
-            </div></div>)}
+              <button className="btn mt-16 ml-8" onClick={() => { setSelectedTraining(null); setTrainingDetail(null); }}>Bezárás</button>
+            </div>
+          </div>)}
         {showCreate && (
-          <div style={mbd} onClick={() => setShowCreate(false)}>
-            <div style={mbx} onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>Új edzés létrehozása</h2>
               <form onSubmit={handleCreate}>
                 <label>Cím:</label>
-                <input style={inp} value={createForm.title} onChange={e => setCreateForm({...createForm, title: e.target.value})} required />
+                <input className="form-input" value={createForm.title} onChange={e => setCreateForm({...createForm, title: e.target.value})} required />
                 <label>Leírás:</label>
-                <textarea style={inp} rows={3} value={createForm.description} onChange={e => setCreateForm({...createForm, description: e.target.value})} />
+                <textarea className="form-input" rows={3} value={createForm.description} onChange={e => setCreateForm({...createForm, description: e.target.value})} />
                 <label>Dátum és idő:</label>
-                <input style={inp} type="datetime-local" value={createForm.event_date} onChange={e => setCreateForm({...createForm, event_date: e.target.value})} required />
+                <input className="form-input" type="datetime-local" value={createForm.event_date} onChange={e => setCreateForm({...createForm, event_date: e.target.value})} required />
                 <label>Helyszín:</label>
-                <input style={inp} value={createForm.location} onChange={e => setCreateForm({...createForm, location: e.target.value})} />
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <input className="form-input" value={createForm.location} onChange={e => setCreateForm({...createForm, location: e.target.value})} />
+                <div className="btn-row">
                   <button className="btn" type="submit">Létrehozás</button>
                   <button className="btn" type="button" onClick={() => setShowCreate(false)}>Mégse</button>
                 </div>
               </form>
-            </div></div>)}
+            </div>
+          </div>)}
       </div>
     </div>
   );

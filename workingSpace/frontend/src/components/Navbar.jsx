@@ -13,10 +13,9 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="container navbar-inner">
         <div>
           <Link to="/">Irányítópult</Link>
-          <Link to="/members">Tagok</Link>
           <Link to="/trainings">Edzések</Link>
           <Link to="/race-reports">Versenyjelentések</Link>
           <Link to="/messages">Üzenetek</Link>
@@ -25,9 +24,9 @@ const Navbar = () => {
           {isAdmin() && <Link to="/groups">Csoportok</Link>}
           {isAdmin() && <Link to="/emails">Email küldés</Link>}
         </div>
-        <div>
+        <div className="navbar-user-section">
           <Link to="/profile">{user?.firstName} {user?.lastName}</Link>
-          <button onClick={handleLogout} className="btn" style={{ marginLeft: '10px' }}>Kijelentkezés</button>
+          <button onClick={handleLogout} className="btn navbar-logout-btn">Kijelentkezés</button>
         </div>
       </div>
     </nav>

@@ -25,7 +25,7 @@ export default function Messages() {
   async function handleCreate(e) {
     e.preventDefault();
     try {
-      const res = await api.post('/messages', { ...createForm, status: 'draft' });
+      await api.post('/messages', { ...createForm, status: 'draft' });
       alert('Hírlevél vázlat létrehozva!');
       setShowCreate(false);
       setCreateForm({ title: '', content: '' });
@@ -52,71 +52,73 @@ export default function Messages() {
     setSelectedRecipients(prev => prev.includes(email) ? prev.filter(e => e !== email) : [...prev, email]);
   }
 
-  const mbd = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-  const mbx = { background: 'white', borderRadius: '8px', padding: '30px', maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto' };
-  const inp = { width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', boxSizing: 'border-box' };
   return (
     <div><Navbar />
-      <div className="container" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="container">
+        <div className="page-header">
           <h1>Hírlevelek</h1>
           {isAdmin() && <button className="btn" onClick={() => setShowCreate(true)}>Új hírlevél</button>}
         </div>
         {loading && <p>Betöltés...</p>}
-        <div className="card" style={{ padding: '20px' }}>
+        <div className="card">
           {messages.length === 0 && <p>Nincsenek hírlevelek.</p>}
           {messages.map(msg => (
-            <div key={msg.id} style={{ padding: '12px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setSelectedMessage(msg)}>
+            <div key={msg.id} className="message-item">
+              <div className="message-item-body" onClick={() => setSelectedMessage(msg)}>
                 <strong>{msg.title}</strong>
-                <p style={{ margin: '4px 0', color: '#555', fontSize: '0.9rem' }}>{msg.content ? msg.content.substring(0, 100) + '...' : ''}</p>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
-                  <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', background: msg.status === 'sent' ? '#4caf50' : '#ff9800', color: 'white' }}>
-                    {msg.status === 'sent' ? 'Elküldve' : 'Vázlat'}</span>
-                  <small style={{ color: '#999' }}>{new Date(msg.created_at).toLocaleDateString('hu-HU')}</small>
+                <p>{msg.content ? msg.content.substring(0, 100) + '...' : ''}</p>
+                <div className="message-item-meta">
+                  <span className={`badge badge-sm badge-${msg.status}`}>
+                    {msg.status === 'sent' ? 'Elküldve' : 'Vázlat'}
+                  </span>
+                  <small className="text-faint">{new Date(msg.created_at).toLocaleDateString('hu-HU')}</small>
                 </div>
               </div>
               {isAdmin() && (
-                <div style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
+                <div className="message-item-actions">
                   {msg.status === 'draft' && <button className="btn" onClick={() => handleSend(msg)}>Kldés</button>}
                   <button className="btn btn-danger" onClick={() => handleDelete(msg.id)}>Törlés</button>
                 </div>)}
             </div>))}
         </div>
         {selectedMessage && (
-          <div style={mbd} onClick={() => setSelectedMessage(null)}>
-            <div style={mbx} onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setSelectedMessage(null)}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>{selectedMessage.title}</h2>
-              <p style={{ color: '#555', lineHeight: 1.6 }}>{selectedMessage.content}</p>
+              <p className="message-detail-content">{selectedMessage.content}</p>
               <p><small>Létrehozva: {new Date(selectedMessage.created_at).toLocaleString('hu-HU')}</small></p>
               {selectedMessage.sent_at && <p><small>Elküldve: {new Date(selectedMessage.sent_at).toLocaleString('hu-HU')}</small></p>}
-              <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', background: selectedMessage.status === 'sent' ? '#4caf50' : '#ff9800', color: 'white' }}>
-                {selectedMessage.status === 'sent' ? 'Elküldve' : 'Vázlat'}</span>
-              <br /><button className="btn" style={{ marginTop: '16px' }} onClick={() => setSelectedMessage(null)}>Bezárás</button>
-            </div></div>)}
+              <span className={`badge badge-sm badge-${selectedMessage.status}`}>
+                {selectedMessage.status === 'sent' ? 'Elküldve' : 'Vázlat'}
+              </span>
+              <br />
+              <button className="btn mt-16" onClick={() => setSelectedMessage(null)}>Bezárás</button>
+            </div>
+          </div>)}
         {showCreate && (
-          <div style={mbd} onClick={() => setShowCreate(false)}>
-            <div style={mbx} onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>Új hírlevél</h2>
               <form onSubmit={handleCreate}>
                 <label>Tárgy:</label>
-                <input style={inp} value={createForm.title} onChange={e => setCreateForm({...createForm, title: e.target.value})} required />
+                <input className="form-input" value={createForm.title} onChange={e => setCreateForm({...createForm, title: e.target.value})} required />
                 <label>Tartalom:</label>
-                <textarea style={inp} rows={5} value={createForm.content} onChange={e => setCreateForm({...createForm, content: e.target.value})} required />
+                <textarea className="form-input" rows={5} value={createForm.content} onChange={e => setCreateForm({...createForm, content: e.target.value})} required />
                 <label>Címzettek:</label>
-                <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #ddd', borderRadius: '4px', padding: '8px', marginBottom: '12px' }}>
+                <div className="recipients-scroll">
                   {members.map(m => (
-                    <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', cursor: 'pointer' }}>
+                    <label key={m.id} className="recipient-label">
                       <input type="checkbox" checked={selectedRecipients.includes(m.email)} onChange={() => toggleRecipient(m.email)} />
                       {m.first_name} {m.last_name} ({m.email})
                     </label>))}
                 </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <div className="btn-row">
                   <button className="btn" type="submit">Létrehozás (vázlat)</button>
                   <button className="btn" type="button" onClick={() => setShowCreate(false)}>Mégse</button>
                 </div>
               </form>
-            </div></div>)}
+            </div>
+          </div>)}
       </div>
     </div>
   );

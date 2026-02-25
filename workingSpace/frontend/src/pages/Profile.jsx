@@ -42,17 +42,15 @@ export default function Profile() {
     } catch(err) { setPwMsg({ type: 'error', text: 'Hiba a jelszóváltás során!' }); }
   }
 
-  const inp = { width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', boxSizing: 'border-box' };
-  const msgStyle = (t) => ({ padding: '10px', borderRadius: '4px', marginBottom: '12px', background: t === 'success' ? '#e8f5e9' : '#ffebee', color: t === 'success' ? '#2e7d32' : '#c62828' });
   const statusLabel = { active: 'Aktív', inactive: 'Inaktív', pending: 'Függőben' };
 
   return (
     <div><Navbar />
-      <div className="container" style={{ padding: '20px' }}>
+      <div className="container">
         <h1>Profil</h1>
         {loading && <p>Betöltés...</p>}
         {profile && (
-          <div className="card" style={{ padding: '20px', marginBottom: '20px' }}>
+          <div className="card">
             <h2>Adataim</h2>
             <p><strong>Név:</strong> {profile.name || profile.first_name + ' ' + profile.last_name}</p>
             <p><strong>Email:</strong> {profile.email}</p>
@@ -60,32 +58,32 @@ export default function Profile() {
             <p><strong>Cím:</strong> {profile.address || '-'}</p>
             <p><strong>Tagságállapot:</strong> {statusLabel[profile.membership_status] || profile.membership_status || '-'}</p>
           </div>)}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div className="card" style={{ padding: '20px' }}>
+        <div className="grid-2">
+          <div className="card">
             <h2>Adatok szerkesztése</h2>
-            {profileMsg && <div style={msgStyle(profileMsg.type)}>{profileMsg.text}</div>}
+            {profileMsg && <div className={`msg-feedback msg-feedback-${profileMsg.type}`}>{profileMsg.text}</div>}
             <form onSubmit={handleProfileSave}>
               <label>Név:</label>
-              <input style={inp} value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} />
+              <input className="form-input" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} />
               <label>Email:</label>
-              <input style={inp} type="email" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
+              <input className="form-input" type="email" value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} />
               <label>Telefon:</label>
-              <input style={inp} value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} />
+              <input className="form-input" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} />
               <label>Cím:</label>
-              <input style={inp} value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} />
+              <input className="form-input" value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} />
               <button className="btn" type="submit">Mentés</button>
             </form>
           </div>
-          <div className="card" style={{ padding: '20px' }}>
+          <div className="card">
             <h2>Jelszó változtatás</h2>
-            {pwMsg && <div style={msgStyle(pwMsg.type)}>{pwMsg.text}</div>}
+            {pwMsg && <div className={`msg-feedback msg-feedback-${pwMsg.type}`}>{pwMsg.text}</div>}
             <form onSubmit={handlePasswordChange}>
               <label>Jelenlegi jelszó:</label>
-              <input style={inp} type="password" value={pwForm.currentPassword} onChange={e => setPwForm({...pwForm, currentPassword: e.target.value})} required />
+              <input className="form-input" type="password" value={pwForm.currentPassword} onChange={e => setPwForm({...pwForm, currentPassword: e.target.value})} required />
               <label>Új jelszó:</label>
-              <input style={inp} type="password" value={pwForm.newPassword} onChange={e => setPwForm({...pwForm, newPassword: e.target.value})} required />
+              <input className="form-input" type="password" value={pwForm.newPassword} onChange={e => setPwForm({...pwForm, newPassword: e.target.value})} required />
               <label>Új jelszó megerősítése:</label>
-              <input style={inp} type="password" value={pwForm.confirmPassword} onChange={e => setPwForm({...pwForm, confirmPassword: e.target.value})} required />
+              <input className="form-input" type="password" value={pwForm.confirmPassword} onChange={e => setPwForm({...pwForm, confirmPassword: e.target.value})} required />
               <button className="btn" type="submit">Jelszó módosítása</button>
             </form>
           </div>

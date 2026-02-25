@@ -42,49 +42,47 @@ export default function Emails() {
     } finally { setLoading(false); }
   }
 
-  if (!isAdmin()) return <div><Navbar /><div className="container" style={{ padding: '20px' }}><p>Hozzáférés megtagadva.</p></div></div>;
-
-  const inp = { width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', boxSizing: 'border-box' };
+  if (!isAdmin()) return <div><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
 
   return (
     <div><Navbar />
-      <div className="container" style={{ padding: '20px' }}>
+      <div className="container">
         <h1>Email Kldés</h1>
         {feedback && (
-          <div style={{ padding: '12px', borderRadius: '4px', marginBottom: '16px', background: feedback.type === 'success' ? '#e8f5e9' : '#ffebee', color: feedback.type === 'success' ? '#2e7d32' : '#c62828', border: '1px solid ' + (feedback.type === 'success' ? '#a5d6a7' : '#ef9a9a') }}>
+          <div className={`feedback feedback-${feedback.type}`}>
             {feedback.message}
           </div>)}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div className="card" style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h2 style={{ margin: 0 }}>Tagok</h2>
+        <div className="grid-2">
+          <div className="card">
+            <div className="page-header">
+              <h2>Tagok</h2>
               <button className="btn" onClick={selectAll}>Összes kijelölése</button>
             </div>
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+            <div className="scroll-list">
               {members.map(m => (
-                <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 0', cursor: 'pointer', borderBottom: '1px solid #f0f0f0' }}>
+                <label key={m.id} className="email-member-item">
                   <input type="checkbox" checked={selectedEmails.includes(m.email)} onChange={() => toggleEmail(m.email)} />
                   <span>{m.first_name} {m.last_name}</span>
-                  <span style={{ color: '#777', fontSize: '0.85rem' }}>{m.email}</span>
+                  <span className="email-address">{m.email}</span>
                 </label>))}
             </div>
           </div>
           <div>
-            <div className="card" style={{ padding: '20px', marginBottom: '16px' }}>
+            <div className="card">
               <h2>Kijelölt címzettek ({selectedEmails.length})</h2>
-              <div style={{ maxHeight: '120px', overflowY: 'auto', marginBottom: '8px' }}>
-                {selectedEmails.map(e => <div key={e} style={{ fontSize: '0.85rem', padding: '2px 0' }}>{e}</div>)}
+              <div className="scroll-list-sm">
+                {selectedEmails.map(e => <div key={e} className="email-small">{e}</div>)}
               </div>
               <label>Egyedi emailek (vesszvel elválasztva):</label>
-              <input style={inp} value={manualEmails} onChange={e => setManualEmails(e.target.value)} placeholder="email1@example.com, email2@example.com" />
+              <input className="form-input" value={manualEmails} onChange={e => setManualEmails(e.target.value)} placeholder="email1@example.com, email2@example.com" />
             </div>
-            <div className="card" style={{ padding: '20px' }}>
+            <div className="card">
               <h2>Uzenet</h2>
               <form onSubmit={handleSend}>
                 <label>Tárgy:</label>
-                <input style={inp} value={subject} onChange={e => setSubject(e.target.value)} required />
+                <input className="form-input" value={subject} onChange={e => setSubject(e.target.value)} required />
                 <label>Tartalom:</label>
-                <textarea style={inp} rows={6} value={content} onChange={e => setContent(e.target.value)} required />
+                <textarea className="form-input" rows={6} value={content} onChange={e => setContent(e.target.value)} required />
                 <button className="btn" type="submit" disabled={loading}>
                   {loading ? 'Kldés...' : 'Email kldése'}
                 </button>

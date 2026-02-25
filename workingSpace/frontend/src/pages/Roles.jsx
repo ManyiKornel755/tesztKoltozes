@@ -42,71 +42,70 @@ export default function Roles() {
     catch(err) { alert('Hiba!'); }
   }
 
-  const mbd = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' };
-  const mbx = { background: 'white', borderRadius: '8px', padding: '30px', maxWidth: '600px', width: '90%', maxHeight: '80vh', overflowY: 'auto' };
-  const inp = { width: '100%', padding: '8px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', boxSizing: 'border-box' };
-
-  if (!isAdmin()) return <div><Navbar /><div className="container" style={{ padding: '20px' }}><p>Hozzáférés megtagadva.</p></div></div>;
+  if (!isAdmin()) return <div><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
 
   return (
     <div><Navbar />
-      <div className="container" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="container">
+        <div className="page-header">
           <h1>Szerepkörök</h1>
           <button className="btn" onClick={() => setShowCreate(true)}>Új szerepkör</button>
         </div>
         {loading && <p>Betöltés...</p>}
-        <div className="card" style={{ padding: '20px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr style={{ borderBottom: '2px solid #ddd' }}>
+        <div className="card">
+          <table className="data-table">
+            <thead><tr>
               {['ID', 'Név', 'Leírás', 'Műveletek'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '8px' }}>{h}</th>))}
+                <th key={h}>{h}</th>))}
             </tr></thead>
             <tbody>
               {roles.map(r => (
-                <tr key={r.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '8px' }}>{r.id}</td>
-                  <td style={{ padding: '8px' }}>{r.name}</td>
-                  <td style={{ padding: '8px' }}>{r.description}</td>
-                  <td style={{ padding: '8px' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                <tr key={r.id}>
+                  <td>{r.id}</td>
+                  <td>{r.name}</td>
+                  <td>{r.description}</td>
+                  <td>
+                    <div className="btn-group">
                       <button className="btn" onClick={() => openEdit(r)}>Szerkesztés</button>
                       <button className="btn btn-danger" onClick={() => handleDelete(r.id)}>Törlés</button>
                     </div>
                   </td>
                 </tr>))}
-            </tbody></table>
+            </tbody>
+          </table>
         </div>
         {selectedRole && (
-          <div style={mbd} onClick={() => setSelectedRole(null)}>
-            <div style={mbx} onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setSelectedRole(null)}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>Szerepkör szerkesztése</h2>
               <form onSubmit={handleEdit}>
                 <label>Név:</label>
-                <input style={inp} value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} required />
+                <input className="form-input" value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} required />
                 <label>Leírás:</label>
-                <textarea style={inp} rows={3} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} />
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <textarea className="form-input" rows={3} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} />
+                <div className="btn-row">
                   <button className="btn" type="submit">Mentés</button>
                   <button className="btn" type="button" onClick={() => setSelectedRole(null)}>Mégse</button>
                 </div>
               </form>
-            </div></div>)}
+            </div>
+          </div>)}
         {showCreate && (
-          <div style={mbd} onClick={() => setShowCreate(false)}>
-            <div style={mbx} onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setShowCreate(false)}>
+            <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>Új szerepkör</h2>
               <form onSubmit={handleCreate}>
                 <label>Név:</label>
-                <input style={inp} value={createForm.name} onChange={e => setCreateForm({...createForm, name: e.target.value})} required />
+                <input className="form-input" value={createForm.name} onChange={e => setCreateForm({...createForm, name: e.target.value})} required />
                 <label>Leírás:</label>
-                <textarea style={inp} rows={3} value={createForm.description} onChange={e => setCreateForm({...createForm, description: e.target.value})} />
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <textarea className="form-input" rows={3} value={createForm.description} onChange={e => setCreateForm({...createForm, description: e.target.value})} />
+                <div className="btn-row">
                   <button className="btn" type="submit">Létrehozás</button>
                   <button className="btn" type="button" onClick={() => setShowCreate(false)}>Mégse</button>
                 </div>
               </form>
-            </div></div>)}
+            </div>
+          </div>)}
       </div>
     </div>
   );

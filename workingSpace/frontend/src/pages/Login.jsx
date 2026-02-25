@@ -22,9 +22,9 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '400px', marginTop: '100px' }}>
+    <div className="container login-page-container">
       <div className="card">
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>WaveAlert Bejelentkezés</h2>
+        <h2 className="login-title">WaveAlert Bejelentkezés</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
@@ -45,7 +45,7 @@ const Login = () => {
             />
           </div>
           {error && <div className="error">{error}</div>}
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>
+          <button type="submit" className="btn btn-primary btn-full">
             Bejelentkezés
           </button>
         </form>
