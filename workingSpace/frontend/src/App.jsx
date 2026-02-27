@@ -67,9 +67,9 @@ function App() {
           } />
           
           <Route path="/race-reports" element={
-            <PrivateRoute>
+            <AdminRoute>
               <RaceReports />
-            </PrivateRoute>
+            </AdminRoute>
           } />
           
           <Route path="/profile" element={
