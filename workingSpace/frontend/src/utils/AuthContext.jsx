@@ -43,8 +43,12 @@ export const AuthProvider = ({ children }) => {
     return user?.roles?.includes('coach') || false;
   };
 
+  const isAdminOrCoach = () => {
+    return isAdmin() || isCoach();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin, isCoach }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, isAdmin, isCoach, isAdminOrCoach }}>
       {children}
     </AuthContext.Provider>
   );
