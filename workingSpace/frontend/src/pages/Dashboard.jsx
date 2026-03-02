@@ -5,7 +5,6 @@ import api from '../services/api';
 
 export default function Dashboard() {
   const { isAdmin } = useAuth();
-  const [members, setMembers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [trainings, setTrainings] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -18,8 +17,8 @@ export default function Dashboard() {
 
   async function fetchAll() {
     try {
-      const [mRes, msgRes, tRes] = await Promise.all([api.get('/members'), api.get('/messages'), api.get('/trainings')]);
-      setMembers(mRes.data||[]); setMessages(msgRes.data||[]); setTrainings(tRes.data||[]);
+      const [msgRes, tRes] = await Promise.all([api.get('/messages'), api.get('/trainings')]);
+      setMessages(msgRes.data||[]); setTrainings(tRes.data||[]);
     } catch(err){console.error(err);} finally{setLoading(false);}
   }
 
@@ -39,57 +38,13 @@ export default function Dashboard() {
     catch(err) { alert('Hiba!'); }
   }
 
-  const activeMembers = members.filter(m => m.membership_status === 'active');
-  const draftMessages = messages.filter(m => m.status === 'draft');
-  const sentMessages = messages.filter(m => m.status === 'sent');
-  const recentMembers = members.slice(0, 5);
   const upcomingTrainings = trainings.filter(t => new Date(t.event_date) >= new Date());
-  const statusLabel = { active: 'Aktív', inactive: 'Inaktív', pending: 'Függőben' };
 
   return (
     <div><Navbar />
       <div className="container">
         <h1>Vezérlőpult</h1>
         {loading && <p>Betöltés...</p>}
-        {isAdmin() && (
-          <>
-            <div className="stats-row">
-              {[
-                { label: 'Összes tag', value: members.length },
-                { label: 'Aktív tagok', value: activeMembers.length },
-                { label: 'Hírlevelek száma', value: sentMessages.length },
-                { label: 'Tervezett hírlevelek', value: draftMessages.length },
-              ].map(card => (
-                <div key={card.label} className="card stat-card">
-                  <h2 className="stat-value">{card.value}</h2>
-                  <p className="stat-label">{card.label}</p>
-                </div>))}
-            </div>
-            <div className="card card-mb-lg">
-              <h2>Legutóbbi tagok</h2>
-              <table className="data-table">
-                <thead><tr>
-                  {['Keresztnév', 'Vezetéknév', 'Email', 'Telefon', 'Állapot'].map(h => (
-                    <th key={h}>{h}</th>))}
-                </tr></thead>
-                <tbody>
-                  {recentMembers.map(m => (
-                    <tr key={m.id}>
-                      <td>{m.first_name}</td>
-                      <td>{m.last_name}</td>
-                      <td>{m.email}</td>
-                      <td>{m.phone}</td>
-                      <td>
-                        <span className={`badge badge-${m.membership_status}`}>
-                          {statusLabel[m.membership_status] || m.membership_status}
-                        </span>
-                      </td>
-                    </tr>))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
         <div className="grid-2">
           <div className="card">
             <h2>Üzenetek</h2>
