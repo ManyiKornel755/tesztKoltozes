@@ -42,8 +42,6 @@ export default function Profile() {
     } catch(err) { setPwMsg({ type: 'error', text: 'Hiba a jelszóváltás során!' }); }
   }
 
-  const statusLabel = { active: 'Aktív', inactive: 'Inaktív', pending: 'Függőben' };
-
   return (
     <div><Navbar />
       <div className="container">
@@ -56,7 +54,6 @@ export default function Profile() {
             <p><strong>Email:</strong> {profile.email}</p>
             <p><strong>Telefon:</strong> {profile.phone || '-'}</p>
             <p><strong>Cím:</strong> {profile.address || '-'}</p>
-            <p><strong>Tagságállapot:</strong> {statusLabel[profile.membership_status] || profile.membership_status || '-'}</p>
           </div>)}
         <div className="grid-2">
           <div className="card">

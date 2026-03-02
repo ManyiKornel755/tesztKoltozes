@@ -39,8 +39,7 @@ router.post('/preview/:userId', isAdmin, async (req, res, next) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        address: user.address,
-        membership_status: user.membership_status
+        address: user.address
       },
       generated_at: new Date().toISOString(),
       // KRITIKUS: req.user.id használata, NEM req.user.userId!
@@ -194,7 +193,6 @@ async function generatePDF(filePath, user, documentType) {
     doc.text(`Email: ${user.email}`);
     if (user.phone) doc.text(`Phone: ${user.phone}`);
     if (user.address) doc.text(`Address: ${user.address}`);
-    doc.text(`Membership Status: ${user.membership_status}`);
 
     doc.moveDown(2);
 
@@ -205,7 +203,6 @@ async function generatePDF(filePath, user, documentType) {
         doc.moveDown();
         doc.fontSize(12);
         doc.text('This certifies that the above-named person is a member of BMFVSE.');
-        doc.text(`Status: ${user.membership_status}`);
         break;
 
       case 'attendance_certificate':

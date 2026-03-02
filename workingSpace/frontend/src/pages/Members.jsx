@@ -55,8 +55,6 @@ export default function Members() {
     return sortOrder === 'asc' ? nA.localeCompare(nB) : nB.localeCompare(nA);
   });
 
-  const statusLabel = { active: 'Aktív', inactive: 'Inaktív', pending: 'Függőben' };
-
   return (
     <div><Navbar />
       <div className="container">
@@ -72,7 +70,7 @@ export default function Members() {
         <div className="card">
           <table className="data-table">
             <thead><tr>
-              {['Keresztnév', 'Vezetéknév', 'Email', 'Telefon', 'Állapot'].map(h => (
+              {['Keresztnév', 'Vezetéknév', 'Email', 'Telefon'].map(h => (
                 <th key={h}>{h}</th>))}
             </tr></thead>
             <tbody>
@@ -82,11 +80,6 @@ export default function Members() {
                   <td>{m.last_name}</td>
                   <td>{m.email}</td>
                   <td>{m.phone}</td>
-                  <td>
-                    <span className={`badge badge-${m.membership_status}`}>
-                      {statusLabel[m.membership_status] || m.membership_status}
-                    </span>
-                  </td>
                 </tr>))}
             </tbody>
           </table>

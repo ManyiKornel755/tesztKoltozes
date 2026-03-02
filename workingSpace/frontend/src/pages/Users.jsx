@@ -10,7 +10,7 @@ export default function Users() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [editForm, setEditForm] = useState({});
-  const [createForm, setCreateForm] = useState({ name: '', email: '', password: '', phone: '', address: '', membership_status: 'active' });
+  const [createForm, setCreateForm] = useState({ name: '', email: '', password: '', phone: '', address: '' });
   const [selectedRoleId, setSelectedRoleId] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -25,13 +25,13 @@ export default function Users() {
 
   function openUser(u) {
     setSelectedUser(u);
-    setEditForm({ name: u.name || '', email: u.email || '', phone: u.phone || '', address: u.address || '', membership_status: u.membership_status || 'active' });
+    setEditForm({ name: u.name || '', email: u.email || '', phone: u.phone || '', address: u.address || '' });
     setSelectedRoleId('');
   }
 
   async function handleCreate(e) {
     e.preventDefault();
-    try { await api.post('/users', createForm); alert('Felhasználó létrehozva!'); setShowCreate(false); setCreateForm({ name: '', email: '', password: '', phone: '', address: '', membership_status: 'active' }); fetchAll(); }
+    try { await api.post('/users', createForm); alert('Felhasználó létrehozva!'); setShowCreate(false); setCreateForm({ name: '', email: '', password: '', phone: '', address: '' }); fetchAll(); }
     catch(err) { alert('Hiba!'); }
   }
 
@@ -71,7 +71,7 @@ export default function Users() {
         <div className="card">
           <table className="data-table">
             <thead><tr>
-              {['Név', 'Email', 'Telefon', 'Tagságállapot', 'Szerepkörök'].map(h => (
+              {['Név', 'Email', 'Telefon', 'Szerepkörök'].map(h => (
                 <th key={h}>{h}</th>))}
             </tr></thead>
             <tbody>
@@ -80,7 +80,6 @@ export default function Users() {
                   <td>{u.name}</td>
                   <td>{u.email}</td>
                   <td>{u.phone}</td>
-                  <td>{u.membership_status}</td>
                   <td>{Array.isArray(u.roles) ? u.roles.map(r => r.name || r).join(', ') : u.roles}</td>
                 </tr>))}
             </tbody>
@@ -99,12 +98,6 @@ export default function Users() {
                 <input className="form-input" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} />
                 <label>Cím:</label>
                 <input className="form-input" value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} />
-                <label>Tagságállapot:</label>
-                <select className="form-input" value={editForm.membership_status} onChange={e => setEditForm({...editForm, membership_status: e.target.value})}>
-                  <option value="active">Aktív</option>
-                  <option value="inactive">Inaktív</option>
-                  <option value="pending">Függőben</option>
-                </select>
                 <div className="btn-row">
                   <button className="btn" type="submit">Mentés</button>
                   <button className="btn btn-danger" type="button" onClick={() => handleDelete(selectedUser.id)}>Törlés</button>
@@ -144,12 +137,6 @@ export default function Users() {
                 <input className="form-input" value={createForm.phone} onChange={e => setCreateForm({...createForm, phone: e.target.value})} />
                 <label>Cím:</label>
                 <input className="form-input" value={createForm.address} onChange={e => setCreateForm({...createForm, address: e.target.value})} />
-                <label>Tagságállapot:</label>
-                <select className="form-input" value={createForm.membership_status} onChange={e => setCreateForm({...createForm, membership_status: e.target.value})}>
-                  <option value="active">Aktív</option>
-                  <option value="inactive">Inaktív</option>
-                  <option value="pending">Függőben</option>
-                </select>
                 <div className="btn-row">
                   <button className="btn" type="submit">Létrehozás</button>
                   <button className="btn" type="button" onClick={() => setShowCreate(false)}>Mégse</button>
