@@ -33,10 +33,10 @@ router.get('/:id', authenticate, async (req, res, next) => {
   }
 });
 
-// POST /api/trainings (admin only) - KRITIKUS: értesítés küldés!
-router.post('/', 
-  authenticate, 
-  authorize('admin'),
+// POST /api/trainings (admin vagy coach) - KRITIKUS: értesítés küldés!
+router.post('/',
+  authenticate,
+  authorize('admin', 'coach'),
   [
     body('title').notEmpty().withMessage('Title is required'),
     body('event_date').isISO8601().withMessage('Valid date is required')
@@ -48,13 +48,14 @@ router.post('/',
         return res.status(400).json({ error: { message: 'Validation failed', details: errors.array() } });
       }
 
-      const { title, description, event_date, location } = req.body;
+      const { title, description, event_date, location, target_group_id } = req.body;
 
       const newTraining = await Event.create({
         title,
         description,
         event_date,
         location,
+        target_group_id: target_group_id || null,
         event_type: 'training',
         created_by: req.user.id
       });
@@ -106,8 +107,8 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res, next) => {
   }
 });
 
-// DELETE /api/trainings/:id (admin only)
-router.delete('/:id', authenticate, authorize('admin'), async (req, res, next) => {
+// DELETE /api/trainings/:id (admin vagy coach)
+router.delete('/:id', authenticate, authorize('admin', 'coach'), async (req, res, next) => {
   try {
     const deleted = await Event.delete(req.params.id);
     if (!deleted) {

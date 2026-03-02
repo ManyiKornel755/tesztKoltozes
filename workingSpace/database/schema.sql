@@ -60,10 +60,12 @@ CREATE TABLE IF NOT EXISTS events (
     event_date DATETIME NOT NULL,
     location VARCHAR(255),
     event_type VARCHAR(50),
+    target_group_id INT NULL,
     created_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (target_group_id) REFERENCES groups(id) ON DELETE SET NULL,
     INDEX idx_event_date (event_date)
 );
 

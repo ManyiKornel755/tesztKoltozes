@@ -16,10 +16,10 @@ class Event {
     return rows[0] || null;
   }
 
-  static async create({ title, description, event_date, location, event_type, created_by = null }) {
+  static async create({ title, description, event_date, location, event_type, target_group_id = null, created_by = null }) {
     const [result] = await pool.query(
-      'INSERT INTO events (title, description, event_date, location, event_type, created_by) VALUES (?, ?, ?, ?, ?, ?)',
-      [title, description || null, event_date, location || null, event_type || null, created_by]
+      'INSERT INTO events (title, description, event_date, location, event_type, target_group_id, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [title, description || null, event_date, location || null, event_type || null, target_group_id || null, created_by]
     );
     return this.findById(result.insertId);
   }

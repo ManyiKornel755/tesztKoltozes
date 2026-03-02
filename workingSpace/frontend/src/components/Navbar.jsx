@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 
 const Navbar = () => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isCoach } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -17,11 +17,11 @@ const Navbar = () => {
         <div>
           <Link to="/">Irányítópult</Link>
           <Link to="/trainings">Edzések</Link>
-          <Link to="/race-reports">Versenyjelentések</Link>
+          {isAdmin() && <Link to="/race-reports">Versenyjelentések</Link>}
           <Link to="/messages">Üzenetek</Link>
           {isAdmin() && <Link to="/users">Felhasználók</Link>}
           {isAdmin() && <Link to="/roles">Szerepkörök</Link>}
-          {isAdmin() && <Link to="/groups">Csoportok</Link>}
+          {(isAdmin() || isCoach()) && <Link to="/groups">Csoportok</Link>}
           {isAdmin() && <Link to="/emails">Email küldés</Link>}
         </div>
         <div className="navbar-user-section">

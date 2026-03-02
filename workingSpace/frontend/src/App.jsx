@@ -49,9 +49,9 @@ function App() {
           } />
 
           <Route path="/groups" element={
-            <AdminRoute>
+            <PrivateRoute>
               <Groups />
-            </AdminRoute>
+            </PrivateRoute>
           } />
 
           <Route path="/trainings" element={
@@ -67,9 +67,9 @@ function App() {
           } />
           
           <Route path="/race-reports" element={
-            <PrivateRoute>
+            <AdminRoute>
               <RaceReports />
-            </PrivateRoute>
+            </AdminRoute>
           } />
           
           <Route path="/profile" element={

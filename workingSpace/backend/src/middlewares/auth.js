@@ -73,4 +73,34 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticate, isAdmin };
+const isAdminOrCoach = async (req, res, next) => {
+  try {
+    const { pool } = require('../config/database');
+
+    const [roles] = await pool.query(
+      `SELECT r.name
+       FROM user_roles ur
+       JOIN roles r ON ur.role_id = r.id
+       WHERE ur.user_id = ?`,
+      [req.user.id]
+    );
+
+    const hasAccess = roles.some(role => role.name === 'admin' || role.name === 'coach');
+
+    if (!hasAccess) {
+      return res.status(403).json({
+        error: 'Admin or coach access required',
+        status: 403
+      });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      error: 'Authorization error',
+      status: 500
+    });
+  }
+};
+
+module.exports = { authenticate, isAdmin, isAdminOrCoach };
