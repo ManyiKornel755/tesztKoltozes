@@ -42,7 +42,7 @@ const RaceReports = () => {
     <div>
       <Navbar />
       <div className="container">
-        <h1>Versenyjelentések</h1>
+        <h1>Versenyjegyzőkönyvek</h1>
         <div className="card">
           <table>
             <thead>

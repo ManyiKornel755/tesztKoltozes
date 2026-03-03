@@ -64,7 +64,7 @@ class PDFGenerator {
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    doc.fontSize(22).text('Race Report', { align: 'center' });
+    doc.fontSize(22).text('Versenyjegyzőkönyv', { align: 'center' });
     doc.moveDown();
     
     doc.fontSize(16).text(report.race_name, { align: 'center' });
