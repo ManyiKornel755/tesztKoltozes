@@ -16,6 +16,7 @@ import Messages from './pages/Messages';
 import RaceReports from './pages/RaceReports';
 import Profile from './pages/Profile';
 import Emails from './pages/Emails';
+import Iskolaigazolas from './pages/Iskolaigazolas';
 
 function App() {
   return (
@@ -81,6 +82,12 @@ function App() {
           <Route path="/emails" element={
             <AdminRoute>
               <Emails />
+            </AdminRoute>
+          } />
+
+          <Route path="/iskolaigazolas" element={
+            <AdminRoute>
+              <Iskolaigazolas />
             </AdminRoute>
           } />
 
