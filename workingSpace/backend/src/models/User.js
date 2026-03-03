@@ -70,16 +70,20 @@ class User {
     const result = await pool.request().query(`
       SELECT
         u.id, u.name, u.email, u.phone, u.address, u.is_member, u.created_at, u.updated_at,
-        STRING_AGG(r.name, ',') as roles
+        (
+          SELECT r.id, r.name
+          FROM roles r
+          INNER JOIN user_roles ur2 ON r.id = ur2.role_id
+          WHERE ur2.user_id = u.id
+          FOR JSON PATH
+        ) as roles_json
       FROM users u
-      LEFT JOIN user_roles ur ON u.id = ur.user_id
-      LEFT JOIN roles r ON ur.role_id = r.id
-      GROUP BY u.id, u.name, u.email, u.phone, u.address, u.is_member, u.created_at, u.updated_at
       ORDER BY u.created_at DESC
     `);
     return result.recordset.map(user => ({
       ...user,
-      roles: user.roles ? user.roles.split(',') : []
+      roles: user.roles_json ? JSON.parse(user.roles_json) : [],
+      roles_json: undefined
     }));
   }
 
@@ -93,16 +97,13 @@ class User {
 
   static async assignRole(userId, roleId) {
     const pool = await poolPromise;
-    const check = await pool.request()
+    await pool.request()
+      .input('userId', sql.Int, userId)
+      .query('DELETE FROM user_roles WHERE user_id = @userId');
+    await pool.request()
       .input('userId', sql.Int, userId)
       .input('roleId', sql.Int, roleId)
-      .query('SELECT 1 FROM user_roles WHERE user_id = @userId AND role_id = @roleId');
-    if (check.recordset.length === 0) {
-      await pool.request()
-        .input('userId', sql.Int, userId)
-        .input('roleId', sql.Int, roleId)
-        .query('INSERT INTO user_roles (user_id, role_id) VALUES (@userId, @roleId)');
-    }
+      .query('INSERT INTO user_roles (user_id, role_id) VALUES (@userId, @roleId)');
     return true;
   }
 
