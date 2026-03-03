@@ -39,6 +39,7 @@ export default function Dashboard() {
   }
 
   const upcomingTrainings = trainings.filter(t => new Date(t.event_date) >= new Date());
+  const sentMessages = messages.filter(m => m.status === 'sent');
 
   return (
     <div><Navbar />
@@ -48,8 +49,8 @@ export default function Dashboard() {
         <div className="grid-2">
           <div className="card">
             <h2>Üzenetek</h2>
-            {messages.length === 0 && <p>Nincs üzenet.</p>}
-            {messages.map(msg => (
+            {sentMessages.length === 0 && <p>Nincs üzenet.</p>}
+            {sentMessages.map(msg => (
               <div key={msg.id} className="list-item" onClick={() => setSelectedMessage(msg)}>
                 <strong>{msg.title}</strong>
                 <p>{msg.content ? msg.content.substring(0, 80) + '...' : ''}</p>

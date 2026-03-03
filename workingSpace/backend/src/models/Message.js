@@ -3,8 +3,16 @@ const { sql, poolPromise } = require('../config/database');
 class Message {
   static async getAll() {
     const pool = await poolPromise;
-    const result = await pool.request()
-      .query('SELECT * FROM messages ORDER BY created_at DESC');
+    const result = await pool.request().query(`
+      SELECT m.*,
+        u.name as creator_name,
+        r.name as creator_role
+      FROM messages m
+      LEFT JOIN users u ON m.created_by = u.id
+      LEFT JOIN user_roles ur ON u.id = ur.user_id
+      LEFT JOIN roles r ON ur.role_id = r.id
+      ORDER BY m.created_at DESC
+    `);
     return result.recordset;
   }
 

@@ -11,6 +11,7 @@ export default function Messages() {
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState({ title: '', content: '' });
   const [selectedRecipients, setSelectedRecipients] = useState([]);
+  const [showSent, setShowSent] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { fetchAll(); }, []);
@@ -52,17 +53,35 @@ export default function Messages() {
     setSelectedRecipients(prev => prev.includes(email) ? prev.filter(e => e !== email) : [...prev, email]);
   }
 
+  function creatorLabel(msg) {
+    if (!msg.creator_name) return '—';
+    if (msg.creator_role === 'admin') return 'Admin';
+    return msg.creator_name;
+  }
+
+  const draftMessages = messages.filter(m => m.status === 'draft');
+  const sentMessages = messages.filter(m => m.status === 'sent');
+  const displayedMessages = showSent ? sentMessages : draftMessages;
+
   return (
     <div><Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Hírlevelek</h1>
-          {isAdmin() && <button className="btn" onClick={() => setShowCreate(true)}>Új hírlevél</button>}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {isAdmin() && (
+              <button className="btn" onClick={() => setShowSent(s => !s)}>
+                {showSent ? 'Vázlatok' : 'Lejárt üzenetek'}
+              </button>)}
+            {isAdmin() && <button className="btn" onClick={() => setShowCreate(true)}>Új hírlevél</button>}
+          </div>
         </div>
         {loading && <p>Betöltés...</p>}
         <div className="card">
-          {messages.length === 0 && <p>Nincsenek hírlevelek.</p>}
-          {messages.map(msg => (
+          {displayedMessages.length === 0 && (
+            <p>{showSent ? 'Nincsenek lejárt üzenetek.' : 'Nincsenek vázlatok.'}</p>
+          )}
+          {displayedMessages.map(msg => (
             <div key={msg.id} className="message-item">
               <div className="message-item-body" onClick={() => setSelectedMessage(msg)}>
                 <strong>{msg.title}</strong>
@@ -71,7 +90,9 @@ export default function Messages() {
                   <span className={`badge badge-sm badge-${msg.status}`}>
                     {msg.status === 'sent' ? 'Elküldve' : 'Vázlat'}
                   </span>
-                  <small className="text-faint">{new Date(msg.created_at).toLocaleDateString('hu-HU')}</small>
+                  <small className="text-faint">
+                    Létrehozta: {creatorLabel(msg)} · {new Date(msg.created_at).toLocaleDateString('hu-HU')}
+                  </small>
                 </div>
               </div>
               {isAdmin() && (
@@ -87,6 +108,7 @@ export default function Messages() {
               <button className="modal-close-btn" onClick={() => setSelectedMessage(null)}>×</button>
               <h2>{selectedMessage.title}</h2>
               <p className="message-detail-content">{selectedMessage.content}</p>
+              <p><small>Létrehozta: <strong>{creatorLabel(selectedMessage)}</strong></small></p>
               <p><small>Létrehozva: {new Date(selectedMessage.created_at).toLocaleString('hu-HU')}</small></p>
               {selectedMessage.sent_at && <p><small>Elküldve: {new Date(selectedMessage.sent_at).toLocaleString('hu-HU')}</small></p>}
               <span className={`badge badge-sm badge-${selectedMessage.status}`}>
