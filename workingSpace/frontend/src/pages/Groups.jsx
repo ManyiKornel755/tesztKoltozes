@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../utils/AuthContext';
 import api from '../services/api';
@@ -33,7 +33,7 @@ const Groups = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/members');
+      const response = await api.get('/users');
       setUsers(response.data);
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -275,7 +275,7 @@ const Groups = () => {
                     <tbody>
                       {groupMembers.map((member) => (
                         <tr key={member.id}>
-                          <td>{member.first_name} {member.last_name}</td>
+                          <td>{member.name}</td>
                           <td>{member.email}</td>
                           <td>
                             <button
@@ -311,7 +311,7 @@ const Groups = () => {
                             onChange={() => handleUserSelection(user.id)}
                             className="checkbox-mr"
                           />
-                          <span>{user.first_name} {user.last_name} ({user.email})</span>
+                          <span>{user.name} ({user.email})</span>
                         </label>
                       </div>
                     ))}

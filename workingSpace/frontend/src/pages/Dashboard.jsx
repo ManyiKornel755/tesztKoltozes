@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../utils/AuthContext';
 import api from '../services/api';
@@ -43,7 +43,7 @@ export default function Dashboard() {
   return (
     <div><Navbar />
       <div className="container">
-        <h1>Vezérlőpult</h1>
+        <h1>Hirdető tábla</h1>
         {loading && <p>Betöltés...</p>}
         <div className="grid-2">
           <div className="card">
@@ -62,7 +62,7 @@ export default function Dashboard() {
             {upcomingTrainings.map(tr => (
               <div key={tr.id} className="list-item" onClick={() => openTraining(tr)}>
                 <strong>{tr.title}</strong>
-                <p>{new Date(tr.event_date).toLocaleString('hu-HU')}</p>
+                <p>{new Date(tr.event_date).toLocaleString('hu-HU', { dateStyle: 'short', timeStyle: 'short' })}</p>
                 <small className="text-secondary">{tr.location}</small>
               </div>))}
           </div>
@@ -80,7 +80,7 @@ export default function Dashboard() {
           <div className="modal-overlay" onClick={() => { setSelectedTraining(null); setTrainingDetail(null); }}>
             <div className="modal-box" onClick={e => e.stopPropagation()}>
               <h2>{selectedTraining.title}</h2>
-              <p><strong>Időpont:</strong> {new Date(selectedTraining.event_date).toLocaleString('hu-HU')}</p>
+              <p><strong>Időpont:</strong> {new Date(selectedTraining.event_date).toLocaleString('hu-HU', { dateStyle: 'short', timeStyle: 'short' })}</p>
               <p><strong>Helyszín:</strong> {selectedTraining.location}</p>
               {trainingDetail && (<><p><strong>Leírás:</strong> {trainingDetail.description}</p>
                 <p><strong>Résztvevők:</strong> {trainingDetail.participants_count ?? (trainingDetail.participants ? trainingDetail.participants.length : 0)}</p></>)}

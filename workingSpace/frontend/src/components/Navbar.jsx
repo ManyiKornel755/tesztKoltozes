@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 
@@ -15,7 +14,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="container navbar-inner">
         <div>
-          <Link to="/">Irányítópult</Link>
+          <Link to="/">Hirdető tábla</Link>
           <Link to="/trainings">Edzések</Link>
           {isAdmin() && <Link to="/race-reports">Versenyjelentések</Link>}
           <Link to="/messages">Üzenetek</Link>
