@@ -114,3 +114,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.claude/settings.local.json
+nul
+workingSpace/backend/scripts/check-schema.js
+workingSpace/backend/scripts/create-admin.js
+workingSpace/backend/src/routes/auth.js
+workingSpace/backend/src/services/emailService.js
+workingSpace/backend/scripts/create-admin.js
+workingSpace/backend/src/routes/auth.js
+workingSpace/backend/src/services/emailService.js

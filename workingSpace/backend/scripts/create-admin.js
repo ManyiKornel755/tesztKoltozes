@@ -1,73 +1,76 @@
 const bcrypt = require('bcryptjs');
-const { pool } = require('../src/config/database');
+const { poolPromise } = require('../src/config/database');
 
 const createAdmin = async () => {
   try {
     console.log('Creating admin user...');
+    const pool = await poolPromise;
 
     // Hash the password
     const hashedPassword = await bcrypt.hash('admin123', 10);
 
     // Check if admin user already exists
-    const [existingUsers] = await pool.query(
-      'SELECT * FROM users WHERE email = ?',
-      ['admin@bmfvse.hu']
-    );
+    const existingUsers = await pool.request()
+      .input('email', 'admin@bmfvse.hu')
+      .query('SELECT * FROM users WHERE email = @email');
 
     let userId;
 
-    if (existingUsers.length > 0) {
+    if (existingUsers.recordset.length > 0) {
       console.log('Admin user already exists. Updating password...');
-      userId = existingUsers[0].id;
+      userId = existingUsers.recordset[0].id;
 
-      await pool.query(
-        'UPDATE users SET password = ? WHERE id = ?',
-        [hashedPassword, userId]
-      );
+      await pool.request()
+        .input('password_hash', hashedPassword)
+        .input('id', userId)
+        .query('UPDATE users SET password_hash = @password_hash WHERE id = @id');
     } else {
       console.log('Creating new admin user...');
 
       // Create admin user
-      const [result] = await pool.query(
-        `INSERT INTO users (name, email, password, phone, address, membership_status)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        ['Admin', 'admin@bmfvse.hu', hashedPassword, null, null, 'active']
-      );
+      const result = await pool.request()
+        .input('first_name', 'Admin')
+        .input('last_name', 'User')
+        .input('email', 'admin@bmfvse.hu')
+        .input('password_hash', hashedPassword)
+        .input('is_member', 1)
+        .query(`INSERT INTO users (first_name, last_name, email, password_hash, is_member)
+                OUTPUT INSERTED.id
+                VALUES (@first_name, @last_name, @email, @password_hash, @is_member)`);
 
-      userId = result.insertId;
+      userId = result.recordset[0].id;
     }
 
     // Check if admin role exists
-    let [adminRoles] = await pool.query(
-      'SELECT * FROM roles WHERE name = ?',
-      ['admin']
-    );
+    const adminRoles = await pool.request()
+      .input('name', 'admin')
+      .query('SELECT * FROM roles WHERE name = @name');
 
     let adminRoleId;
 
-    if (adminRoles.length === 0) {
+    if (adminRoles.recordset.length === 0) {
       console.log('Creating admin role...');
-      const [roleResult] = await pool.query(
-        'INSERT INTO roles (name, description) VALUES (?, ?)',
-        ['admin', 'Administrator with full access']
-      );
-      adminRoleId = roleResult.insertId;
+      const roleResult = await pool.request()
+        .input('name', 'admin')
+        .input('description', 'Administrator with full access')
+        .query('INSERT INTO roles (name, description) OUTPUT INSERTED.id VALUES (@name, @description)');
+      adminRoleId = roleResult.recordset[0].id;
     } else {
-      adminRoleId = adminRoles[0].id;
+      adminRoleId = adminRoles.recordset[0].id;
     }
 
     // Check if user already has admin role
-    const [existingRoles] = await pool.query(
-      'SELECT * FROM user_roles WHERE user_id = ? AND role_id = ?',
-      [userId, adminRoleId]
-    );
+    const existingRoles = await pool.request()
+      .input('user_id', userId)
+      .input('role_id', adminRoleId)
+      .query('SELECT * FROM user_roles WHERE user_id = @user_id AND role_id = @role_id');
 
-    if (existingRoles.length === 0) {
+    if (existingRoles.recordset.length === 0) {
       console.log('Assigning admin role to user...');
-      await pool.query(
-        'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)',
-        [userId, adminRoleId]
-      );
+      await pool.request()
+        .input('user_id', userId)
+        .input('role_id', adminRoleId)
+        .query('INSERT INTO user_roles (user_id, role_id) VALUES (@user_id, @role_id)');
     } else {
       console.log('User already has admin role.');
     }

@@ -109,7 +109,7 @@ class Group {
       FROM groups g
       LEFT JOIN group_members gm ON g.id = gm.group_id
       WHERE g.is_deleted = 0
-      GROUP BY g.id, g.name, g.created_by, g.is_deleted, g.created_at, g.updated_at
+      GROUP BY g.id, g.name, g.description, g.created_by, g.is_deleted, g.created_at, g.updated_at
       ORDER BY g.name
     `);
     return result.recordset;

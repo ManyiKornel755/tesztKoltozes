@@ -24,7 +24,7 @@ router.post('/login', [
       return res.status(401).json({ error: { message: 'Invalid credentials' } });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: { message: 'Invalid credentials' } });
     }
@@ -43,7 +43,7 @@ router.post('/login', [
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: `${user.first_name} ${user.last_name}`.trim(),
         roles: roleNames
       }
     });
@@ -75,7 +75,7 @@ router.post('/register', [
 
     res.status(201).json({
       message: 'User created successfully',
-      user: { id: newUser.id, email: newUser.email, name: newUser.name }
+      user: { id: newUser.id, email: newUser.email, name: `${newUser.first_name} ${newUser.last_name}`.trim() }
     });
   } catch (error) {
     next(error);
@@ -102,7 +102,7 @@ router.get('/me', async (req, res, next) => {
     res.json({
       id: user.id,
       email: user.email,
-      name: user.name,
+      name: `${user.first_name} ${user.last_name}`.trim(),
       phone: user.phone,
       roles: roles.map(r => r.name)
     });
