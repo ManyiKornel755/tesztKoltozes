@@ -16,7 +16,7 @@ const Navbar = () => {
         <div>
           <Link to="/">Hirdető tábla</Link>
           <Link to="/trainings">Edzések</Link>
-          {isAdmin() && <Link to="/race-reports">Versenyjelentések</Link>}
+          {isAdmin() && <Link to="/race-reports">Versenyjegyzőkönyvek</Link>}
           <Link to="/messages">Üzenetek</Link>
           {isAdmin() && <Link to="/users">Felhasználók</Link>}
           {isAdmin() && <Link to="/roles">Szerepkörök</Link>}
