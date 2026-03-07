@@ -47,13 +47,13 @@ const RaceReports = () => {
   };
 
   return (
-    <div>
+    <div className="main-content">
       <Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Versenyjegyzőkönyvek</h1>
-          <button className="btn btn-primary" onClick={() => navigate('/race-minutes/new')}>
-            + Új versenyjegyzőkönyv
+          <button className="btn-add" onClick={() => navigate('/race-minutes/new')}>
+            Hozzáadás
           </button>
         </div>
         <div className="card">
@@ -84,7 +84,7 @@ const RaceReports = () => {
                       <button className="btn btn-primary btn-sm" onClick={() => navigate(`/race-minutes/edit/${m.id}`)}>
                         Szerkesztés
                       </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(m.id)}>
+                      <button className="btn-danger btn-sm" onClick={() => handleDelete(m.id)}>
                         Törlés
                       </button>
                     </div>

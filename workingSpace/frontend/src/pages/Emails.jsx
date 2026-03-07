@@ -42,22 +42,25 @@ export default function Emails() {
     } finally { setLoading(false); }
   }
 
-  if (!isAdmin()) return <div><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
+  if (!isAdmin()) return <div className="main-content"><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
 
   return (
-    <div><Navbar />
+    <div className="main-content"><Navbar />
       <div className="container">
-        <h1>Email Küldés</h1>
+        <h1 style={{textAlign: 'center', marginBottom: '32px'}}>Email Küldés</h1>
         {feedback && (
           <div className={`feedback feedback-${feedback.type}`}>
             {feedback.message}
           </div>)}
         <div className="grid-2">
           <div className="card">
-            <div className="page-header">
-              <h2>Tagok</h2>
-              <button className="btn" onClick={selectAll}>Összes kijelölése</button>
-            </div>
+            <h2 style={{color: '#1976D2', marginBottom: '12px'}}>Tagok</h2>
+            <button className="btn-select-all" onClick={selectAll}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{marginRight: '6px'}}>
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Összes kijelölése
+            </button>
             <div className="scroll-list">
               {members.map(m => (
                 <label key={m.id} className="email-member-item">
@@ -69,15 +72,15 @@ export default function Emails() {
           </div>
           <div>
             <div className="card">
-              <h2>Kijelölt címzettek ({selectedEmails.length})</h2>
+              <h2 style={{color: '#1976D2'}}>Kijelölt címzettek ({selectedEmails.length})</h2>
               <div className="scroll-list-sm">
                 {selectedEmails.map(e => <div key={e} className="email-small">{e}</div>)}
               </div>
-              <label>Egyedi emailek (vesszővel elválasztva):</label>
+              <label style={{color: '#1976D2', fontWeight: '600'}}>Egyedi emailek (vesszővel elválasztva):</label>
               <input className="form-input" value={manualEmails} onChange={e => setManualEmails(e.target.value)} placeholder="email1@example.com, email2@example.com" />
             </div>
             <div className="card">
-              <h2>Üzenet</h2>
+              <h2 style={{color: '#1976D2'}}>Üzenet</h2>
               <form onSubmit={handleSend}>
                 <label>Tárgy:</label>
                 <input className="form-input" value={subject} onChange={e => setSubject(e.target.value)} required />

@@ -161,7 +161,7 @@ const RaceMinuteForm = () => {
   };
 
   return (
-    <div>
+    <div className="main-content">
       <Navbar />
       <div className="container">
         <div className="page-header">
@@ -277,7 +277,7 @@ const RaceMinuteForm = () => {
                     <td><input className="form-input" type="text" value={ev.idopont} onChange={e => setEvent(i, 'idopont', e.target.value)} /></td>
                     <td><input className="form-input" type="text" value={ev.esemeny} onChange={e => setEvent(i, 'esemeny', e.target.value)} /></td>
                     <td><input className="form-input" type="text" value={ev.szelero} onChange={e => setEvent(i, 'szelero', e.target.value)} /></td>
-                    <td><button type="button" className="btn btn-danger btn-xs" onClick={() => removeRow(i)}>×</button></td>
+                    <td><button type="button" className="btn-danger btn-xs" onClick={() => removeRow(i)}>×</button></td>
                   </tr>
                 ))}
               </tbody>

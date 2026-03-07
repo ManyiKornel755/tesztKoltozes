@@ -12,6 +12,9 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
@@ -25,6 +28,7 @@ const eventsRoutes = require('./routes/events');
 const messagesRoutes = require('./routes/messages');
 const transactionsRoutes = require('./routes/transactions');
 const userDocumentsRoutes = require('./routes/user-documents');
+const certificatesRoutes = require('./routes/certificates');
 
 // Register routes with /api prefix
 app.use('/api/auth', authRoutes);
@@ -34,6 +38,7 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/messages', messagesRoutes);
 app.use('/api/transactions', transactionsRoutes);
 app.use('/api/user-documents', userDocumentsRoutes);
+app.use('/api/certificates', certificatesRoutes);
 
 // 404 handler
 app.use((req, res) => {

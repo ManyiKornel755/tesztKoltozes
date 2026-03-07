@@ -128,6 +128,15 @@ class User {
       .input('password', sql.NVarChar, hash)
       .query('UPDATE users SET password = @password WHERE id = @id');
   }
+
+  static async updateProfileImage(id, imageUrl) {
+    const pool = await poolPromise;
+    await pool.request()
+      .input('id', sql.Int, id)
+      .input('profile_image', sql.NVarChar, imageUrl)
+      .query('UPDATE users SET profile_image = @profile_image WHERE id = @id');
+    return this.findById(id);
+  }
 }
 
 module.exports = User;

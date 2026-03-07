@@ -21,22 +21,21 @@ const createAdmin = async () => {
       userId = existingUsers.recordset[0].id;
 
       await pool.request()
-        .input('password_hash', hashedPassword)
+        .input('password', hashedPassword)
         .input('id', userId)
-        .query('UPDATE users SET password_hash = @password_hash WHERE id = @id');
+        .query('UPDATE users SET password = @password WHERE id = @id');
     } else {
       console.log('Creating new admin user...');
 
       // Create admin user
       const result = await pool.request()
-        .input('first_name', 'Admin')
-        .input('last_name', 'User')
+        .input('name', 'Admin User')
         .input('email', 'admin@bmfvse.hu')
-        .input('password_hash', hashedPassword)
+        .input('password', hashedPassword)
         .input('is_member', 1)
-        .query(`INSERT INTO users (first_name, last_name, email, password_hash, is_member)
+        .query(`INSERT INTO users (name, email, password, is_member)
                 OUTPUT INSERTED.id
-                VALUES (@first_name, @last_name, @email, @password_hash, @is_member)`);
+                VALUES (@name, @email, @password, @is_member)`);
 
       userId = result.recordset[0].id;
     }

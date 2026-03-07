@@ -165,14 +165,14 @@ const Groups = () => {
   );
 
   return (
-    <div>
+    <div className="main-content">
       <Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Csoportok</h1>
           {canManage() && (
-            <button onClick={() => setShowCreateModal(true)} className="btn btn-primary">
-              Csoport létrehozása
+            <button onClick={() => setShowCreateModal(true)} className="btn-add">
+              Hozzáadás
             </button>
           )}
         </div>
@@ -203,7 +203,7 @@ const Groups = () => {
                         <button onClick={() => openEditModal(group)} className="btn btn-secondary btn-mr">
                           Szerkesztés
                         </button>
-                        <button onClick={() => handleDeleteGroup(group.id)} className="btn btn-danger">
+                        <button onClick={() => handleDeleteGroup(group.id)} className="btn-danger">
                           Törlés
                         </button>
                       </td>
@@ -282,7 +282,7 @@ const Groups = () => {
                           <td>
                             <button
                               onClick={() => handleRemoveMember(member.id)}
-                              className="btn btn-danger btn-xs"
+                              className="btn-danger btn-xs"
                             >
                               Eltávolítás
                             </button>

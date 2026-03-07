@@ -11,7 +11,7 @@ export default function Messages() {
   const [showCreate, setShowCreate] = useState(false);
   const [createForm, setCreateForm] = useState({ title: '', content: '' });
   const [selectedRecipients, setSelectedRecipients] = useState([]);
-  const [showSent, setShowSent] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('draft');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { fetchAll(); }, []);
@@ -61,25 +61,58 @@ export default function Messages() {
 
   const draftMessages = messages.filter(m => m.status === 'draft');
   const sentMessages = messages.filter(m => m.status === 'sent');
-  const displayedMessages = showSent ? sentMessages : draftMessages;
+
+  // Lejárt üzenetek: 30 napnál régebbi elküldött üzenetek
+  const expiredMessages = sentMessages.filter(m => {
+    if (!m.sent_at) return false;
+    const sentDate = new Date(m.sent_at);
+    const now = new Date();
+    const daysDiff = (now - sentDate) / (1000 * 60 * 60 * 24);
+    return daysDiff > 30;
+  });
+
+  // Aktív üzenetek: 30 napnál újabb elküldött üzenetek
+  const activeMessages = sentMessages.filter(m => {
+    if (!m.sent_at) return true;
+    const sentDate = new Date(m.sent_at);
+    const now = new Date();
+    const daysDiff = (now - sentDate) / (1000 * 60 * 60 * 24);
+    return daysDiff <= 30;
+  });
+
+  let displayedMessages = [];
+  if (filterStatus === 'draft') displayedMessages = draftMessages;
+  else if (filterStatus === 'active') displayedMessages = activeMessages;
+  else if (filterStatus === 'expired') displayedMessages = expiredMessages;
 
   return (
-    <div><Navbar />
+    <div className="main-content"><Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Hírlevelek</h1>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             {isAdmin() && (
-              <button className="btn" onClick={() => setShowSent(s => !s)}>
-                {showSent ? 'Vázlatok' : 'Lejárt üzenetek'}
-              </button>)}
-            {isAdmin() && <button className="btn" onClick={() => setShowCreate(true)}>Új hírlevél</button>}
+              <select
+                className="message-filter-dropdown"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="draft">Vázlatok</option>
+                <option value="active">Aktív üzenetek</option>
+                <option value="expired">Lejárt üzenetek</option>
+              </select>
+            )}
+            {isAdmin() && <button className="btn-add" onClick={() => setShowCreate(true)}>Hozzáadás</button>}
           </div>
         </div>
         {loading && <p>Betöltés...</p>}
         <div className="card">
           {displayedMessages.length === 0 && (
-            <p>{showSent ? 'Nincsenek lejárt üzenetek.' : 'Nincsenek vázlatok.'}</p>
+            <p>
+              {filterStatus === 'draft' && 'Nincsenek vázlatok.'}
+              {filterStatus === 'active' && 'Nincsenek aktív üzenetek.'}
+              {filterStatus === 'expired' && 'Nincsenek lejárt üzenetek.'}
+            </p>
           )}
           {displayedMessages.map(msg => (
             <div key={msg.id} className="message-item">
@@ -98,7 +131,7 @@ export default function Messages() {
               {isAdmin() && (
                 <div className="message-item-actions">
                   {msg.status === 'draft' && <button className="btn" onClick={() => handleSend(msg)}>Küldés</button>}
-                  <button className="btn btn-danger" onClick={() => handleDelete(msg.id)}>Törlés</button>
+                  <button className="btn-danger" onClick={() => handleDelete(msg.id)}>Törlés</button>
                 </div>)}
             </div>))}
         </div>

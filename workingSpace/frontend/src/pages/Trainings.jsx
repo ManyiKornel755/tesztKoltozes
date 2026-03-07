@@ -4,12 +4,14 @@ import { useAuth } from '../utils/AuthContext';
 import api from '../services/api';
 
 export default function Trainings() {
-  const { isAdmin, isCoach } = useAuth();
+  const { isAdmin, isCoach, user } = useAuth();
   const [trainings, setTrainings] = useState([]);
   const [groups, setGroups] = useState([]);
   const [selectedTraining, setSelectedTraining] = useState(null);
   const [trainingDetail, setTrainingDetail] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editForm, setEditForm] = useState({ title: '', description: '', event_date: '', location: '', target_group_id: '' });
   const [createForm, setCreateForm] = useState({ title: '', description: '', event_date: '', location: '', target_group_id: '' });
   const [loading, setLoading] = useState(true);
   const [registeredEvents, setRegisteredEvents] = useState([]);
@@ -38,6 +40,31 @@ export default function Trainings() {
     catch(err) { alert('Hiba a létrehozás során!'); }
   }
 
+  function openEdit(training) {
+    setShowEdit(true);
+    setSelectedTraining(training);
+    setEditForm({
+      title: training.title || '',
+      description: training.description || '',
+      event_date: training.event_date ? new Date(training.event_date).toISOString().slice(0, 16) : '',
+      location: training.location || '',
+      target_group_id: training.target_group_id || ''
+    });
+  }
+
+  async function handleEdit(e) {
+    e.preventDefault();
+    try {
+      await api.put(`/trainings/${selectedTraining.id}`, editForm);
+      alert('Edzés módosítva!');
+      setShowEdit(false);
+      setSelectedTraining(null);
+      fetchTrainings();
+    } catch(err) {
+      alert('Hiba a módosítás során!');
+    }
+  }
+
   async function handleDelete(id, e) {
     e.stopPropagation();
     if (!window.confirm('Biztosan törli ezt az edzést?')) return;
@@ -56,27 +83,55 @@ export default function Trainings() {
   }
 
   return (
-    <div><Navbar />
+    <div className="main-content"><Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Edzések</h1>
-          {(isAdmin() || isCoach()) && <button className="btn" onClick={() => setShowCreate(true)}>Új edzés</button>}
+          {(isAdmin() || isCoach()) && <button className="btn-add" onClick={() => setShowCreate(true)}>Hozzáadás</button>}
         </div>
-        {loading && <p>Betöltés...</p>}
-        <div className="grid-3">
+        {loading && <p style={{color: 'white'}}>Betöltés...</p>}
+        <div className="card">
+          {trainings.length === 0 && <p>Nincsenek edzések.</p>}
           {trainings.map(t => {
-            const isUpcoming = new Date(t.event_date) >= new Date();
+            const eventDate = new Date(t.event_date);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+
+            let status, statusLabel;
+            if (eventDay > today) {
+              status = 'upcoming';
+              statusLabel = 'Várható';
+            } else if (eventDay.getTime() === today.getTime()) {
+              status = 'active-event';
+              statusLabel = 'Aktív';
+            } else {
+              status = 'past';
+              statusLabel = 'Lezárult';
+            }
+
+            const canEdit = isAdmin() || isCoach() || (user?.id && t.creator_id === user.id);
+
             return (
-              <div key={t.id} className="card training-card" onClick={() => openDetail(t)}>
-                <h3>{t.title}</h3>
-                <p className="text-muted">{new Date(t.event_date).toLocaleString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</p>
-                <p className="text-secondary">{t.location}</p>
-                <span className={`badge badge-sm badge-${isUpcoming ? 'upcoming' : 'past'}`}>
-                  {isUpcoming ? 'Várható' : 'Lezárult'}
-                </span>
-                {(isAdmin() || isCoach()) && (
-                  <button className="btn btn-danger training-delete-btn" onClick={(e) => handleDelete(t.id, e)}>Törlés</button>)}
-              </div>);
+              <div key={t.id} className="message-item">
+                <div className="message-item-body" onClick={() => openDetail(t)}>
+                  <strong>{t.title}</strong>
+                  <p>{new Date(t.event_date).toLocaleString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</p>
+                  <div className="message-item-meta">
+                    <span className={`badge badge-sm badge-${status}`}>
+                      {statusLabel}
+                    </span>
+                    <small className="text-secondary">{t.location}</small>
+                  </div>
+                </div>
+                {canEdit && (
+                  <div className="message-item-actions">
+                    <button className="btn" onClick={() => openEdit(t)}>Módosítás</button>
+                    <button className="btn-danger" onClick={(e) => { e.stopPropagation(); handleDelete(t.id, e); }}>Törlés</button>
+                  </div>
+                )}
+              </div>
+            );
           })}
         </div>
         {selectedTraining && (
@@ -121,6 +176,32 @@ export default function Trainings() {
                 <div className="btn-row">
                   <button className="btn" type="submit">Létrehozás</button>
                   <button className="btn" type="button" onClick={() => setShowCreate(false)}>Mégse</button>
+                </div>
+              </form>
+            </div>
+          </div>)}
+        {showEdit && (
+          <div className="modal-overlay">
+            <div className="modal-box">
+              <button className="modal-close-btn" onClick={() => { setShowEdit(false); setSelectedTraining(null); }}>×</button>
+              <h2>Edzés módosítása</h2>
+              <form onSubmit={handleEdit}>
+                <label>Cím:</label>
+                <input className="form-input" value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} required />
+                <label>Leírás:</label>
+                <textarea className="form-input" rows={3} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} />
+                <label>Dátum és idő:</label>
+                <input className="form-input" type="datetime-local" value={editForm.event_date} onChange={e => setEditForm({...editForm, event_date: e.target.value})} required />
+                <label>Helyszín:</label>
+                <input className="form-input" value={editForm.location} onChange={e => setEditForm({...editForm, location: e.target.value})} />
+                <label>Célcsoport (opcionális):</label>
+                <select className="form-input" value={editForm.target_group_id} onChange={e => setEditForm({...editForm, target_group_id: e.target.value})}>
+                  <option value="">-- Nincs megadva --</option>
+                  {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                </select>
+                <div className="btn-row">
+                  <button className="btn" type="submit">Mentés</button>
+                  <button className="btn" type="button" onClick={() => { setShowEdit(false); setSelectedTraining(null); }}>Mégse</button>
                 </div>
               </form>
             </div>

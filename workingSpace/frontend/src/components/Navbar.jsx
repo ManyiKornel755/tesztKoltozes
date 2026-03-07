@@ -1,35 +1,167 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../utils/AuthContext';
 
 const Navbar = () => {
   const { user, logout, isAdmin, isCoach } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const toggleProfileDropdown = () => {
+    setProfileDropdownOpen(!profileDropdownOpen);
+  };
+
   return (
-    <nav className="navbar">
-      <div className="container navbar-inner">
-        <div>
-          <Link to="/">Hirdető tábla</Link>
-          <Link to="/trainings">Edzések</Link>
-          {isAdmin() && <Link to="/race-reports">Versenyjegyzőkönyvek</Link>}
-          <Link to="/messages">Üzenetek</Link>
-          {isAdmin() && <Link to="/users">Felhasználók</Link>}
-          {isAdmin() && <Link to="/roles">Szerepkörök</Link>}
-          {(isAdmin() || isCoach()) && <Link to="/groups">Csoportok</Link>}
-          {isAdmin() && <Link to="/emails">Email küldés</Link>}
-          {isAdmin() && <Link to="/iskolaigazolas">Iskolaigazolás</Link>}
+    <>
+      {/* Menu Overlay */}
+      <div
+        className={`menu-overlay ${menuOpen ? 'active' : ''}`}
+        onClick={closeMenu}
+      />
+
+      {/* Side Menu */}
+      <div className={`side-menu ${menuOpen ? 'open' : ''}`}>
+        <div className="menu-header">
+          <span className="menu-title">Menü</span>
+          <button className="menu-toggle" onClick={toggleMenu}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
-        <div className="navbar-user-section">
-          <Link to="/profile">{user?.firstName} {user?.lastName}</Link>
-          <button onClick={handleLogout} className="btn navbar-logout-btn">Kijelentkezés</button>
+        <div className="menu-items">
+          <Link to="/" className="menu-item" onClick={closeMenu}>
+            Hirdető tábla
+          </Link>
+          <Link to="/trainings" className="menu-item" onClick={closeMenu}>
+            Edzések
+          </Link>
+          {isAdmin() && (
+            <Link to="/race-reports" className="menu-item" onClick={closeMenu}>
+              Versenyjegyzőkönyvek
+            </Link>
+          )}
+          <Link to="/messages" className="menu-item" onClick={closeMenu}>
+            Üzenetek
+          </Link>
+          {isAdmin() && (
+            <Link to="/users" className="menu-item" onClick={closeMenu}>
+              Felhasználók
+            </Link>
+          )}
+          {isAdmin() && (
+            <Link to="/roles" className="menu-item" onClick={closeMenu}>
+              Szerepkörök
+            </Link>
+          )}
+          {(isAdmin() || isCoach()) && (
+            <Link to="/groups" className="menu-item" onClick={closeMenu}>
+              Csoportok
+            </Link>
+          )}
+          {isAdmin() && (
+            <Link to="/emails" className="menu-item" onClick={closeMenu}>
+              Email küldés
+            </Link>
+          )}
+          {isAdmin() && (
+            <Link to="/iskolaigazolas" className="menu-item" onClick={closeMenu}>
+              Iskolaigazolás
+            </Link>
+          )}
+        </div>
+        <div className="menu-footer"></div>
+      </div>
+
+      {/* Top Bar */}
+      <div className="top-bar">
+        <button className="hamburger" onClick={toggleMenu}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div style={{ position: 'relative' }}>
+          {location.pathname === '/profile' ? (
+            <button
+              className="back-button"
+              onClick={() => navigate(-1)}
+              title="Vissza"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+              </svg>
+            </button>
+          ) : (
+            <>
+              <button
+                className="profile-button hide-indicator"
+                onClick={toggleProfileDropdown}
+              >
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span>Profil</span>
+              </button>
+
+              {/* Profile Dropdown */}
+              <div className={`profile-dropdown ${profileDropdownOpen ? 'active' : ''}`}>
+            <div style={{
+              padding: '12px',
+              borderBottom: '1px solid rgba(13, 71, 161, 0.1)',
+              marginBottom: '8px'
+            }}>
+              <div style={{fontWeight: 600, color: '#0D47A1'}}>
+                {user?.firstName} {user?.lastName}
+              </div>
+              <div style={{fontSize: '12px', color: '#1976D2', marginTop: '4px'}}>
+                {user?.email}
+              </div>
+            </div>
+            <Link
+              to="/profile"
+              className="dropdown-item"
+              onClick={() => setProfileDropdownOpen(false)}
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{width: '16px', height: '16px', marginRight: '8px', verticalAlign: 'middle', fill: '#0D47A1'}}>
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              Profil megtekintése
+            </Link>
+            <button
+              className="dropdown-item"
+              onClick={() => {
+                setProfileDropdownOpen(false);
+                handleLogout();
+              }}
+              style={{color: '#dc3545'}}
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{width: '16px', height: '16px', marginRight: '8px', verticalAlign: 'middle', fill: '#dc3545'}}>
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+              </svg>
+              Kijelentkezés
+            </button>
+          </div>
+            </>
+          )}
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 

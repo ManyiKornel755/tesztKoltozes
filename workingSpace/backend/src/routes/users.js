@@ -1,6 +1,8 @@
 const express = require('express');
 const User = require('../models/User');
 const { authenticate, isAdmin } = require('../middlewares/auth');
+const upload = require('../middlewares/upload');
+const path = require('path');
 
 const router = express.Router();
 
@@ -87,6 +89,30 @@ router.patch('/me/password', async (req, res, next) => {
     await User.updatePassword(req.user.id, newPassword);
 
     res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/users/me/profile-image → profilkép feltöltés
+router.post('/me/profile-image', upload.single('profileImage'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'No image file uploaded',
+        status: 400
+      });
+    }
+
+    const imageUrl = `/uploads/profiles/${req.file.filename}`;
+
+    // Update user profile image in database
+    await User.updateProfileImage(req.user.id, imageUrl);
+
+    res.json({
+      message: 'Profile image uploaded successfully',
+      imageUrl: imageUrl
+    });
   } catch (error) {
     next(error);
   }

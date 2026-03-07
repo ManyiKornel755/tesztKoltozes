@@ -1,0 +1,1171 @@
+/* ===== WAVEALERT - BALATON KÉK TÉMA ===== */
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Balaton Gradient Background */
+.screen {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #1976D2, #64B5F6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Login Screen Styles */
+.login-screen {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #1976D2, #64B5F6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 32px;
+    width: 300px;
+    box-shadow: 0 8px 32px rgba(13, 71, 161, 0.3);
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-icon {
+    width: 80px;
+    height: 80px;
+    background: #5C6BC0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 12px rgba(92, 107, 192, 0.4);
+}
+
+.user-icon svg {
+    width: 40px;
+    height: 40px;
+    fill: white;
+}
+
+.form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #0D47A1;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #42A5F5;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1E88E5;
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+}
+
+.form-group input::placeholder {
+    color: rgba(13, 71, 161, 0.5);
+}
+
+.btn-primary {
+    width: 100%;
+    height: 40px;
+    background: #1E88E5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.btn-primary:hover {
+    background: #1976D2;
+    box-shadow: 0 6px 16px rgba(30, 136, 229, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Profile Screen with Menu */
+#profileScreen {
+    display: none;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+#profileScreen.active {
+    display: block;
+}
+
+/* Side Menu */
+.side-menu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: rgba(30, 136, 229, 0.95);
+    box-shadow: 4px 0 16px rgba(13, 71, 161, 0.3);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.side-menu.open {
+    transform: translateX(0);
+}
+
+.menu-header {
+    background: #1E88E5;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+}
+
+.menu-title {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.menu-toggle {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.menu-items {
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-item {
+    background: rgba(255, 255, 255, 0.85);
+    color: #0D47A1;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(13, 71, 161, 0.15);
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.25);
+    transform: translateX(4px);
+}
+
+.menu-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: rgba(13, 71, 161, 0.7);
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Main Content */
+.main-content {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #1976D2, #64B5F6);
+}
+
+/* Címek és fejlécek fehér színnel */
+.main-content h1:not(.card h1):not(.modal-box h1):not(.dashboard-card h1),
+.main-content h2:not(.form-panel h2):not(.info-card h3):not(.card h2):not(.modal-box h2):not(.dashboard-card h2),
+.main-content h3:not(.info-card h3):not(.card h3):not(.modal-box h3):not(.dashboard-card h3),
+.container > h1:not(.card h1),
+.page-header h1 {
+    color: white !important;
+    font-size: 2rem;
+    margin-bottom: 24px;
+}
+
+/* Nagyobb távolság címek és kártyák között */
+.container > h1 {
+    margin-bottom: 32px;
+}
+
+.page-header {
+    margin-bottom: 32px;
+}
+
+/* Top Bar */
+.top-bar {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    position: relative;
+}
+
+.hamburger {
+    width: 40px;
+    height: 40px;
+    background: rgba(13, 71, 161, 0.9);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.4);
+    transition: all 0.2s ease;
+}
+
+.hamburger:hover {
+    background: #0D47A1;
+    box-shadow: 0 6px 16px rgba(13, 71, 161, 0.5);
+}
+
+.hamburger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: white;
+}
+
+.profile-button {
+    width: 56px;
+    height: 56px;
+    background: #5C6BC0;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.4);
+    transition: all 0.2s ease;
+    border: none;
+    color: white;
+    position: relative;
+}
+
+.profile-button::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    background: #dc3545;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.profile-button.hide-indicator::after {
+    display: none;
+}
+
+.back-button {
+    width: 56px;
+    height: 56px;
+    background: #5C6BC0;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.4);
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(13, 71, 161, 0.5);
+}
+
+.profile-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(13, 71, 161, 0.5);
+}
+
+.profile-button svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+}
+
+.profile-button span {
+    color: white;
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 70px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.3);
+    padding: 8px;
+    min-width: 180px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.profile-dropdown.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: block;
+    padding: 10px 12px;
+    color: #0D47A1;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    background: rgba(30, 136, 229, 0.1);
+}
+
+/* Profile Container */
+.profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Kártyák szélessége korlátozva */
+.card {
+    max-width: 900px;
+}
+
+.container .card {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.profile-header {
+    background: rgba(13, 71, 161, 0.9);
+    backdrop-filter: blur(10px);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.back-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-right: 16px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.back-button:hover {
+    transform: translateX(-4px);
+}
+
+.back-button svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.profile-header h1 {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0;
+    justify-content: center;
+}
+
+.tab {
+    background: rgba(66, 165, 245, 0.7);
+    color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 8px 8px 0 0;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 180px;
+    position: relative;
+}
+
+.tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #1E88E5;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.tab.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0D47A1;
+    font-weight: 600;
+    box-shadow: 0 -2px 8px rgba(13, 71, 161, 0.2);
+    transform: translateY(-2px);
+}
+
+.tab.active::after {
+    transform: scaleX(1);
+}
+
+.tab:hover:not(.active) {
+    background: rgba(66, 165, 245, 0.85);
+    transform: translateY(-1px);
+}
+
+/* Tab Content */
+.tab-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(13, 71, 161, 0.3);
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Profile Layout */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 35% 65%;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-panel {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.25);
+    transition: all 0.3s ease;
+}
+
+.form-panel h2 {
+    color: #0D47A1;
+    font-size: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-panel.center {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Checkbox stílusok - kisebb méret */
+.form-panel input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+/* Checkbox labelek egy oszlopban */
+.form-panel .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    color: #0D47A1;
+}
+
+.form-panel .form-group label span {
+    flex: 1;
+}
+
+.btn-save {
+    width: 100%;
+    height: 42px;
+    background: #1E88E5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+    transition: all 0.2s ease;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-save:hover {
+    background: #1976D2;
+    box-shadow: 0 6px 16px rgba(30, 136, 229, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-save:active {
+    transform: translateY(0);
+}
+
+.btn-save svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+}
+
+/* Info Panel */
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Settings tab - larger gap between cards */
+.tab-pane .info-card + .info-card {
+    margin-top: 24px;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(13, 71, 161, 0.3);
+}
+
+.info-card.large {
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-card h3 {
+    color: #0D47A1;
+    margin-bottom: 16px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.info-card p {
+    color: #1976D2;
+    margin: 6px 0;
+}
+
+.profile-image-placeholder {
+    width: 120px;
+    height: 120px;
+    background: rgba(30, 136, 229, 0.1);
+    border: 3px dashed #42A5F5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+}
+
+.profile-image-placeholder:hover {
+    background: rgba(30, 136, 229, 0.15);
+    border-color: #1E88E5;
+    transform: scale(1.05);
+}
+
+.profile-image-placeholder svg {
+    width: 60px;
+    height: 60px;
+    fill: #42A5F5;
+}
+
+.btn-upload {
+    background: #42A5F5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(66, 165, 245, 0.4);
+}
+
+.btn-upload:hover {
+    background: #1E88E5;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 136, 229, 0.5);
+}
+
+/* Bottom Card */
+.bottom-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(13, 71, 161, 0.25);
+    min-height: 220px;
+}
+
+.bottom-card h3 {
+    color: #0D47A1;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.data-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.data-item {
+    background: rgba(30, 136, 229, 0.05);
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #42A5F5;
+}
+
+.data-item p {
+    color: #1976D2;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.data-content p {
+    color: #1976D2;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.stat-item {
+    background: rgba(30, 136, 229, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1E88E5;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #1976D2;
+    margin-top: 4px;
+}
+
+.password-change-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* ===== HOMEPAGE / DASHBOARD STÍLUSOK ===== */
+
+/* Card titles inside cards should be blue */
+.card h2,
+.card h3,
+.dashboard-card h3,
+.dashboard-card .card-header h3,
+.form-panel h2,
+.info-card h3,
+.page-header h2 {
+    color: #1976D2 !important;
+}
+
+/* Homepage Container */
+.homepage-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* Üdvözlő Banner */
+.welcome-banner {
+    background: linear-gradient(135deg, rgba(30, 136, 229, 0.9), rgba(66, 165, 245, 0.9));
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 32px rgba(13, 71, 161, 0.3);
+    color: white;
+    text-align: center;
+}
+
+.welcome-banner h1 {
+    font-size: 36px;
+    margin: 0;
+    color: white !important;
+    font-weight: 700;
+}
+
+/* Dashboard Grid - 2 oszlop */
+.dashboard-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Dashboard Grid - 3 oszlop */
+.dashboard-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Dashboard Card - nagyobb méret */
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(13, 71, 161, 0.25);
+    transition: all 0.3s ease;
+    min-height: 200px;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 32px rgba(13, 71, 161, 0.35);
+}
+
+/* Card Header Simple */
+.card-header-simple {
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(30, 136, 229, 0.1);
+    padding-bottom: 12px;
+}
+
+.card-header-simple h3 {
+    color: #0D47A1;
+    font-size: 20px;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Weather Card specifikus stílusok */
+.weather-card .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.weather-card .icon-container {
+    width: 52px;
+    height: 52px;
+    background: rgba(30, 136, 229, 0.15);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+}
+
+.weather-card .card-header h3 {
+    color: #0D47A1;
+    font-size: 19px;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Card Value - nagy számok */
+.card-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1E88E5;
+    margin: 16px 0;
+    line-height: 1.2;
+}
+
+/* Card Label */
+.card-label {
+    font-size: 14px;
+    color: #42A5F5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.status-badge.good {
+    background: rgba(76, 175, 80, 0.2);
+    color: #2E7D32;
+}
+
+.status-badge.warning {
+    background: rgba(255, 167, 38, 0.2);
+    color: #EF6C00;
+}
+
+.status-badge.info {
+    background: rgba(30, 136, 229, 0.2);
+    color: #0D47A1;
+}
+
+/* Alerts Section */
+.alerts-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(13, 71, 161, 0.25);
+    margin-top: 40px;
+}
+
+.alerts-section h2 {
+    color: #0D47A1;
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Alert Item */
+.alert-item {
+    background: rgba(30, 136, 229, 0.08);
+    border-left: 4px solid #42A5F5;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.alert-item:hover {
+    background: rgba(30, 136, 229, 0.15);
+    transform: translateX(6px);
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.15);
+}
+
+.alert-item.warning {
+    border-left-color: #FFA726;
+    background: rgba(255, 167, 38, 0.08);
+}
+
+.alert-item.warning:hover {
+    background: rgba(255, 167, 38, 0.15);
+}
+
+/* Alert Icon */
+.alert-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Alert Content */
+.alert-content {
+    flex: 1;
+}
+
+.alert-content h4 {
+    color: #0D47A1;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 17px;
+}
+
+.alert-content p {
+    color: #1976D2;
+    font-size: 15px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.alert-time {
+    color: #42A5F5;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Refresh Button - nagyobb és lekerekített */
+.btn-refresh {
+    background: linear-gradient(135deg, #1E88E5, #42A5F5);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 16px 32px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-refresh:hover {
+    background: linear-gradient(135deg, #1976D2, #1E88E5);
+    box-shadow: 0 8px 28px rgba(30, 136, 229, 0.5);
+    transform: translateY(-3px);
+}
+
+.btn-refresh:active {
+    transform: translateY(-1px);
+}
+
+/* Általános gombok nagyobbak és lekerekítettebbek */
+.main-content .btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.main-content .btn-primary {
+    padding: 14px 28px;
+    border-radius: 14px;
+}
+
+/* List Item hover effect */
+.dashboard-card .list-item,
+.list-item-dashboard {
+    padding: 14px;
+    border-bottom: 1px solid rgba(30, 136, 229, 0.1);
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.dashboard-card .list-item:hover,
+.list-item-dashboard:hover {
+    background: rgba(30, 136, 229, 0.08);
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(13, 71, 161, 0.1);
+}
+
+.dashboard-card .list-item:last-child,
+.list-item-dashboard:last-child {
+    border-bottom: none;
+}
+
+.list-item-dashboard strong {
+    color: #0D47A1;
+    font-size: 15px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.list-item-dashboard p {
+    color: #1976D2;
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.list-item-dashboard small {
+    color: #42A5F5;
+    font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .login-card {
+        width: 90%;
+        max-width: 320px;
+    }
+
+    .side-menu {
+        width: 80%;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab {
+        border-radius: 8px;
+        margin-bottom: 4px;
+    }
+
+    .dashboard-grid-2,
+    .dashboard-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-banner h1 {
+        font-size: 24px;
+    }
+
+    .homepage-container {
+        padding: 16px;
+    }
+
+    .card-value {
+        font-size: 28px;
+    }
+}
+
+/* Error Message */
+.error {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+    background: rgba(220, 53, 69, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+}

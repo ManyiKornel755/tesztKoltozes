@@ -56,14 +56,14 @@ export default function Members() {
   });
 
   return (
-    <div><Navbar />
+    <div className="main-content"><Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Tagok</h1>
           <div className="btn-group">
             <button className="btn" onClick={() => setSortOrder('asc')}>Név A-Z</button>
             <button className="btn" onClick={() => setSortOrder('desc')}>Név Z-A</button>
-            {isAdmin() && <button className="btn" onClick={() => setShowCreate(true)}>Új tag</button>}
+            {isAdmin() && <button className="btn-add" onClick={() => setShowCreate(true)}>Hozzáadás</button>}
           </div>
         </div>
         {loading && <p>Betöltés...</p>}
@@ -99,7 +99,7 @@ export default function Members() {
                 <input className="form-input" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} />
                 <div className="btn-row">
                   <button className="btn" type="submit">Mentés</button>
-                  <button className="btn btn-danger" type="button" onClick={() => handleDelete(selectedMember.id)}>Törlés</button>
+                  <button className="btn-danger" type="button" onClick={() => handleDelete(selectedMember.id)}>Törlés</button>
                   <button className="btn" type="button" onClick={() => setSelectedMember(null)}>Mégse</button>
                 </div>
               </form>

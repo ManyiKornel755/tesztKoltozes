@@ -75,14 +75,14 @@ export default function Users() {
     } catch(err) { alert('Hiba a szerepkör beállításakor!'); }
   }
 
-  if (!isAdmin()) return <div><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
+  if (!isAdmin()) return <div className="main-content"><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
 
   return (
-    <div><Navbar />
+    <div className="main-content"><Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Felhasználók</h1>
-          <button className="btn" onClick={() => setShowCreate(true)}>Új felhasználó</button>
+          <button className="btn-add" onClick={() => setShowCreate(true)}>Hozzáadás</button>
         </div>
         {loading && <p>Betöltés...</p>}
         <div className="card">
@@ -100,7 +100,7 @@ export default function Users() {
                   <td>{Array.isArray(u.roles) && u.roles.length > 0 ? u.roles[0].name : '—'}</td>
                   <td>
                     <button className="btn btn-sm" onClick={() => openUser(u)}>Szerkesztés</button>
-                    <button className="btn btn-danger btn-sm" style={{marginLeft:'6px'}} onClick={() => handleDelete(u.id)}>Törlés</button>
+                    <button className="btn-danger btn-sm" style={{marginLeft:'6px'}} onClick={() => handleDelete(u.id)}>Törlés</button>
                   </td>
                 </tr>))}
             </tbody>
@@ -122,7 +122,7 @@ export default function Users() {
                 <input className="form-input" value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} />
                 <div className="btn-row">
                   <button className="btn" type="submit">Mentés</button>
-                  <button className="btn btn-danger" type="button" onClick={() => handleDelete(selectedUser.id)}>Törlés</button>
+                  <button className="btn-danger" type="button" onClick={() => handleDelete(selectedUser.id)}>Törlés</button>
                   <button className="btn" type="button" onClick={() => setSelectedUser(null)}>Mégse</button>
                 </div>
               </form>

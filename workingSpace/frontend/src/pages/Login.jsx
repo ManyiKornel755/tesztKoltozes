@@ -22,9 +22,14 @@ const Login = () => {
   };
 
   return (
-    <div className="container login-page-container">
-      <div className="card">
-        <h2 className="login-title">WaveAlert Bejelentkezés</h2>
+    <div className="login-screen">
+      <div className="login-card">
+        <div className="user-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <h2 style={{color: '#0D47A1', marginBottom: '24px'}}>WaveAlert Bejelentkezés</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
@@ -32,6 +37,7 @@ const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="pelda@email.com"
               required
             />
           </div>
@@ -41,11 +47,12 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
               required
             />
           </div>
           {error && <div className="error">{error}</div>}
-          <button type="submit" className="btn btn-primary btn-full">
+          <button type="submit" className="btn-primary">
             Bejelentkezés
           </button>
         </form>

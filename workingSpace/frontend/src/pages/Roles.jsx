@@ -42,14 +42,14 @@ export default function Roles() {
     catch(err) { alert('Hiba!'); }
   }
 
-  if (!isAdmin()) return <div><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
+  if (!isAdmin()) return <div className="main-content"><Navbar /><div className="container"><p>Hozzáférés megtagadva.</p></div></div>;
 
   return (
-    <div><Navbar />
+    <div className="main-content"><Navbar />
       <div className="container">
         <div className="page-header">
           <h1>Szerepkörök</h1>
-          <button className="btn" onClick={() => setShowCreate(true)}>Új szerepkör</button>
+          <button className="btn-add" onClick={() => setShowCreate(true)}>Hozzáadás</button>
         </div>
         {loading && <p>Betöltés...</p>}
         <div className="card">
@@ -67,7 +67,7 @@ export default function Roles() {
                   <td>
                     <div className="btn-group">
                       <button className="btn" onClick={() => openEdit(r)}>Szerkesztés</button>
-                      <button className="btn btn-danger" onClick={() => handleDelete(r.id)}>Törlés</button>
+                      <button className="btn-danger" onClick={() => handleDelete(r.id)}>Törlés</button>
                     </div>
                   </td>
                 </tr>))}

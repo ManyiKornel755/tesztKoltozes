@@ -24,7 +24,7 @@ router.post('/login', [
       return res.status(401).json({ error: { message: 'Invalid credentials' } });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: { message: 'Invalid credentials' } });
     }
@@ -43,7 +43,7 @@ router.post('/login', [
       user: {
         id: user.id,
         email: user.email,
-        name: `${user.first_name} ${user.last_name}`.trim(),
+        name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
         roles: roleNames
       }
     });
