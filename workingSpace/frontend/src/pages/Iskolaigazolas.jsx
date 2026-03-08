@@ -10,11 +10,27 @@ export default function Iskolaigazolas() {
   const [memberDetails, setMemberDetails] = useState(null);
   const [certificates, setCertificates] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [logo, setLogo] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [mode, setMode] = useState('personal');
+  const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewContent, setPreviewContent] = useState('');
   const [createForm, setCreateForm] = useState({
-    title: '',
-    content: '',
-    issue_date: new Date().toISOString().split('T')[0],
-    valid_until: ''
+    personName: '',
+    birthDate: '',
+    birthPlace: '',
+    motherName: '',
+    idNumber: '',
+    address: '',
+    certificateType: '',
+    issueDate: new Date().toISOString().split('T')[0],
+    validUntil: '',
+    purpose: '',
+    additionalNotes: '',
+    issuerName: '',
+    issuerPosition: 'Elnök'
   });
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,8 +41,14 @@ export default function Iskolaigazolas() {
 
   async function fetchMembers() {
     try {
-      const res = await api.get('/members');
-      setMembers(res.data || []);
+      const res = await api.get('/users');
+      // Csak azok a felhasználók, akik NEM adminok vagy edzők
+      const regularMembers = (res.data || []).filter(user => {
+        const roles = user.roles || [];
+        const roleNames = roles.map(r => r.name?.toLowerCase());
+        return !roleNames.includes('admin') && !roleNames.includes('coach');
+      });
+      setMembers(regularMembers);
     } catch (err) {
       console.error(err);
     } finally {
@@ -50,30 +72,193 @@ export default function Iskolaigazolas() {
     }
   }
 
-  function openCreateModal() {
+  async function openCreateModal() {
     setShowCreateModal(true);
+    // Fetch groups for group mode
+    try {
+      const res = await api.get('/groups');
+      setGroups(res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch groups:', err);
+    }
+    // Pre-fill member data if available
+    if (memberDetails) {
+      setCreateForm({
+        personName: memberDetails.name || `${selectedMember.first_name} ${selectedMember.last_name}`,
+        birthDate: memberDetails.birth_date || '',
+        birthPlace: memberDetails.birth_place || '',
+        motherName: memberDetails.mother_name || '',
+        idNumber: memberDetails.id_number || '',
+        address: memberDetails.address || '',
+        certificateType: 'membership',
+        issueDate: new Date().toISOString().split('T')[0],
+        validUntil: '',
+        purpose: '',
+        additionalNotes: '',
+        issuerName: '',
+        issuerPosition: 'Elnök'
+      });
+    }
+  }
+
+  function handleModeChange(newMode) {
+    setMode(newMode);
+    if (newMode === 'personal') {
+      setSelectedGroup(null);
+    }
+  }
+
+  function handleReset() {
     setCreateForm({
-      title: 'Iskolai igazolás',
-      content: '',
-      issue_date: new Date().toISOString().split('T')[0],
-      valid_until: ''
+      personName: memberDetails?.name || `${selectedMember.first_name} ${selectedMember.last_name}`,
+      birthDate: memberDetails?.birth_date || '',
+      birthPlace: memberDetails?.birth_place || '',
+      motherName: memberDetails?.mother_name || '',
+      idNumber: memberDetails?.id_number || '',
+      address: memberDetails?.address || '',
+      certificateType: '',
+      issueDate: new Date().toISOString().split('T')[0],
+      validUntil: '',
+      purpose: '',
+      additionalNotes: '',
+      issuerName: '',
+      issuerPosition: 'Elnök'
     });
+    setMode('personal');
+    setSelectedGroup(null);
+    setLogo(null);
+    setLogoPreview(null);
+  }
+
+  function handlePreview() {
+    const content = generateCertificateContent();
+    setPreviewContent(content);
+    setShowPreviewModal(true);
+  }
+
+  function generateCertificateContent() {
+    return `
+ISKOLAIGAZOLÁS
+
+Balatonmáriai Vizisport Egyesület
+
+Alulírott igazolom, hogy ${createForm.personName}
+Születési dátum: ${createForm.birthDate}
+Születési hely: ${createForm.birthPlace}
+Anyja neve: ${createForm.motherName}
+${createForm.idNumber ? `Személyi ig. szám: ${createForm.idNumber}` : ''}
+Lakcím: ${createForm.address}
+
+${getCertificateTypeText(createForm.certificateType)}
+
+Kiállítás célja: ${createForm.purpose}
+
+${createForm.additionalNotes ? `Megjegyzés: ${createForm.additionalNotes}` : ''}
+
+Kiállítva: ${createForm.issueDate}
+${createForm.validUntil ? `Érvényes: ${createForm.validUntil}-ig` : ''}
+
+${createForm.issuerName}
+${createForm.issuerPosition}
+    `.trim();
+  }
+
+  function handleLogoSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setFeedback({ type: 'error', message: 'A logo mérete maximum 2MB lehet!' });
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setFeedback({ type: 'error', message: 'Csak képfájlok tölthetők fel!' });
+        return;
+      }
+      setLogo(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   async function handleCreate(e) {
     e.preventDefault();
+
+    const certificateContent = generateCertificateContent();
+
     try {
-      await api.post('/certificates', {
-        ...createForm,
-        user_id: selectedMember.id
-      });
-      setFeedback({ type: 'success', message: 'Igazolás sikeresen létrehozva!' });
+      if (mode === 'personal') {
+        await api.post('/certificates', {
+          user_id: selectedMember.id,
+          title: `${getCertificateTypeText(createForm.certificateType)} - ${createForm.personName}`,
+          content: certificateContent,
+          issue_date: createForm.issueDate,
+          valid_until: createForm.validUntil || null
+        });
+        setFeedback({ type: 'success', message: 'Igazolás sikeresen létrehozva!' });
+      } else {
+        // Group mode - create certificates for all group members
+        if (!selectedGroup) {
+          setFeedback({ type: 'error', message: 'Válasszon ki egy csoportot!' });
+          return;
+        }
+        // Fetch group members
+        const membersRes = await api.get(`/groups/${selectedGroup}/members`);
+        const groupMembers = membersRes.data || [];
+
+        for (const member of groupMembers) {
+          const memberContent = `
+ISKOLAIGAZOLÁS
+
+Balatonmáriai Vizisport Egyesület
+
+Alulírott igazolom, hogy ${member.name}
+${getCertificateTypeText(createForm.certificateType)}
+
+Kiállítás célja: ${createForm.purpose}
+
+${createForm.additionalNotes ? `Megjegyzés: ${createForm.additionalNotes}` : ''}
+
+Kiállítva: ${createForm.issueDate}
+${createForm.validUntil ? `Érvényes: ${createForm.validUntil}-ig` : ''}
+
+${createForm.issuerName}
+${createForm.issuerPosition}
+          `.trim();
+
+          await api.post('/certificates', {
+            user_id: member.id,
+            title: `${getCertificateTypeText(createForm.certificateType)} - ${member.name}`,
+            content: memberContent,
+            issue_date: createForm.issueDate,
+            valid_until: createForm.validUntil || null
+          });
+        }
+        setFeedback({ type: 'success', message: `${groupMembers.length} igazolás sikeresen létrehozva!` });
+      }
+
       setShowCreateModal(false);
-      // Refresh certificates
-      handleMemberClick(selectedMember);
+      handleReset();
+      // Refresh certificates if viewing a member
+      if (selectedMember) {
+        handleMemberClick(selectedMember);
+      }
     } catch (err) {
       setFeedback({ type: 'error', message: 'Hiba az igazolás létrehozása során!' });
     }
+  }
+
+  function getCertificateTypeText(type) {
+    const types = {
+      'membership': 'az egyesületünk aktív tagja',
+      'training': 'rendszeresen részt vesz az edzéseinken',
+      'competition': 'részt vett egyesületünk versenyén',
+      'exam': 'sikeresen elvégezte a vizsgát',
+      'participation': 'részt vett az egyesületünk programjain'
+    };
+    return types[type] || '';
   }
 
   async function handleDelete(id) {
@@ -205,52 +390,302 @@ export default function Iskolaigazolas() {
 
         {/* Létrehozás Modal */}
         {showCreateModal && (
-          <div className="modal-overlay">
-            <div className="modal-box">
+          <div className="modal-overlay" style={{zIndex: 1000}}>
+            <div className="modal-box" style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto'}}>
               <button className="modal-close-btn" onClick={() => setShowCreateModal(false)}>×</button>
-              <h2>Igazolás létrehozása</h2>
-              <p style={{marginBottom: '16px'}}>
-                <strong>Tag:</strong> {selectedMember.first_name} {selectedMember.last_name}
-              </p>
+
+              {/* Organization Header */}
+              <div style={{textAlign: 'center', marginBottom: '24px', padding: '20px', background: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)', borderRadius: '12px', color: 'white'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '12px'}}>
+                  <div style={{width: '80px', height: '80px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed rgba(255,255,255,0.5)'}}>
+                    {logoPreview ? (
+                      <img src={logoPreview} alt="Logo" style={{width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px'}} />
+                    ) : (
+                      <span style={{fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)'}}>Logo</span>
+                    )}
+                  </div>
+                  <div>
+                    <h2 style={{margin: 0, fontSize: '1.8rem', fontWeight: 'bold'}}>Balatonmáriai Vizisport Egyesület</h2>
+                    <p style={{margin: '4px 0 0 0', fontSize: '0.95rem', opacity: 0.9}}>Igazolás Generátor</p>
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoSelect}
+                  style={{display: 'none'}}
+                  id="logo-upload"
+                />
+                <label htmlFor="logo-upload" style={{display: 'inline-block', padding: '6px 12px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', border: '1px solid rgba(255,255,255,0.3)'}}>
+                  Logo feltöltése
+                </label>
+              </div>
+
               <form onSubmit={handleCreate}>
-                <label>Cím:</label>
-                <input
-                  className="form-input"
-                  value={createForm.title}
-                  onChange={e => setCreateForm({...createForm, title: e.target.value})}
-                  required
-                />
-                <label>Tartalom:</label>
-                <textarea
-                  className="form-input"
-                  rows={6}
-                  value={createForm.content}
-                  onChange={e => setCreateForm({...createForm, content: e.target.value})}
-                  placeholder="Az igazolás tartalma..."
-                  required
-                />
-                <label>Kiállítás dátuma:</label>
-                <input
-                  className="form-input"
-                  type="date"
-                  value={createForm.issue_date}
-                  onChange={e => setCreateForm({...createForm, issue_date: e.target.value})}
-                  required
-                />
-                <label>Érvényesség vége (opcionális):</label>
-                <input
-                  className="form-input"
-                  type="date"
-                  value={createForm.valid_until}
-                  onChange={e => setCreateForm({...createForm, valid_until: e.target.value})}
-                />
-                <div className="btn-row">
-                  <button className="btn" type="submit">Létrehozás</button>
-                  <button className="btn" type="button" onClick={() => setShowCreateModal(false)}>
-                    Mégse
+                {/* Mode Selector */}
+                <div style={{marginBottom: '24px', padding: '16px', background: 'rgba(30, 136, 229, 0.05)', borderRadius: '12px'}}>
+                  <label style={{display: 'block', marginBottom: '12px', fontWeight: 'bold', color: '#1565C0'}}>Típus:</label>
+                  <div style={{display: 'flex', gap: '16px'}}>
+                    <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px 20px', background: mode === 'personal' ? '#1E88E5' : 'white', color: mode === 'personal' ? 'white' : '#333', borderRadius: '8px', border: '2px solid #1E88E5', transition: 'all 0.3s'}}>
+                      <input
+                        type="radio"
+                        name="mode"
+                        value="personal"
+                        checked={mode === 'personal'}
+                        onChange={() => handleModeChange('personal')}
+                        style={{marginRight: '8px'}}
+                      />
+                      Személyes
+                    </label>
+                    <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px 20px', background: mode === 'group' ? '#1E88E5' : 'white', color: mode === 'group' ? 'white' : '#333', borderRadius: '8px', border: '2px solid #1E88E5', transition: 'all 0.3s'}}>
+                      <input
+                        type="radio"
+                        name="mode"
+                        value="group"
+                        checked={mode === 'group'}
+                        onChange={() => handleModeChange('group')}
+                        style={{marginRight: '8px'}}
+                      />
+                      Csoport
+                    </label>
+                  </div>
+                </div>
+
+                {/* Personal Data Section */}
+                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0', opacity: mode === 'group' ? 0.5 : 1}}>
+                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Személyes Adatok</h3>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Név *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.personName}
+                        onChange={e => setCreateForm({...createForm, personName: e.target.value})}
+                        disabled={mode === 'group'}
+                        required={mode === 'personal'}
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Születési dátum *</label>
+                      <input
+                        className="form-input"
+                        type="date"
+                        value={createForm.birthDate}
+                        onChange={e => setCreateForm({...createForm, birthDate: e.target.value})}
+                        disabled={mode === 'group'}
+                        required={mode === 'personal'}
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Születési hely *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.birthPlace}
+                        onChange={e => setCreateForm({...createForm, birthPlace: e.target.value})}
+                        disabled={mode === 'group'}
+                        required={mode === 'personal'}
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Anyja neve *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.motherName}
+                        onChange={e => setCreateForm({...createForm, motherName: e.target.value})}
+                        disabled={mode === 'group'}
+                        required={mode === 'personal'}
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Személyi ig. szám</label>
+                      <input
+                        className="form-input"
+                        value={createForm.idNumber}
+                        onChange={e => setCreateForm({...createForm, idNumber: e.target.value})}
+                        disabled={mode === 'group'}
+                        placeholder="Opcionális"
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Lakcím *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.address}
+                        onChange={e => setCreateForm({...createForm, address: e.target.value})}
+                        disabled={mode === 'group'}
+                        required={mode === 'personal'}
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Group Selection Section */}
+                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0', opacity: mode === 'personal' ? 0.5 : 1}}>
+                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Csoport Kiválasztása</h3>
+                  <div>
+                    <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Válasszon csoportot *</label>
+                    <select
+                      className="form-input"
+                      value={selectedGroup || ''}
+                      onChange={e => setSelectedGroup(e.target.value)}
+                      disabled={mode === 'personal'}
+                      required={mode === 'group'}
+                      style={{width: '100%'}}
+                    >
+                      <option value="">-- Válasszon --</option>
+                      {groups.map(group => (
+                        <option key={group.id} value={group.id}>{group.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Certificate Data Section */}
+                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0'}}>
+                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Igazolás Adatok</h3>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                    <div style={{gridColumn: '1 / -1'}}>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Igazolás típusa *</label>
+                      <select
+                        className="form-input"
+                        value={createForm.certificateType}
+                        onChange={e => setCreateForm({...createForm, certificateType: e.target.value})}
+                        required
+                        style={{width: '100%'}}
+                      >
+                        <option value="">-- Válasszon --</option>
+                        <option value="membership">Tagság</option>
+                        <option value="training">Edzés</option>
+                        <option value="competition">Verseny</option>
+                        <option value="exam">Vizsga</option>
+                        <option value="participation">Részvétel</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Kiállítás dátuma *</label>
+                      <input
+                        className="form-input"
+                        type="date"
+                        value={createForm.issueDate}
+                        onChange={e => setCreateForm({...createForm, issueDate: e.target.value})}
+                        required
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Érvényes eddig</label>
+                      <input
+                        className="form-input"
+                        type="date"
+                        value={createForm.validUntil}
+                        onChange={e => setCreateForm({...createForm, validUntil: e.target.value})}
+                        placeholder="Opcionális"
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div style={{gridColumn: '1 / -1'}}>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Kiállítás célja *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.purpose}
+                        onChange={e => setCreateForm({...createForm, purpose: e.target.value})}
+                        required
+                        placeholder="pl. munkáltatónak, iskolának, stb."
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div style={{gridColumn: '1 / -1'}}>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>További megjegyzések</label>
+                      <textarea
+                        className="form-input"
+                        rows={3}
+                        value={createForm.additionalNotes}
+                        onChange={e => setCreateForm({...createForm, additionalNotes: e.target.value})}
+                        placeholder="Opcionális"
+                        style={{width: '100%', resize: 'vertical'}}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Issuer Data Section */}
+                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0'}}>
+                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Kiállító Adatai</h3>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Kiállító neve *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.issuerName}
+                        onChange={e => setCreateForm({...createForm, issuerName: e.target.value})}
+                        required
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Beosztás *</label>
+                      <input
+                        className="form-input"
+                        value={createForm.issuerPosition}
+                        onChange={e => setCreateForm({...createForm, issuerPosition: e.target.value})}
+                        required
+                        style={{width: '100%'}}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Button Group */}
+                <div style={{display: 'flex', gap: '12px', justifyContent: 'flex-end'}}>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    style={{padding: '12px 24px', background: '#757575', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'}}
+                  >
+                    Visszaállítás
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePreview}
+                    style={{padding: '12px 24px', background: '#1E88E5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'}}
+                  >
+                    Előnézet
+                  </button>
+                  <button
+                    type="submit"
+                    style={{padding: '12px 24px', background: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'}}
+                  >
+                    Generálás
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Preview Modal */}
+        {showPreviewModal && (
+          <div className="modal-overlay" style={{zIndex: 1001}}>
+            <div className="modal-box" style={{maxWidth: '600px'}}>
+              <button className="modal-close-btn" onClick={() => setShowPreviewModal(false)}>×</button>
+              <h2 style={{marginBottom: '16px', color: '#1565C0'}}>Előnézet</h2>
+              <div style={{padding: '20px', background: 'white', borderRadius: '8px', border: '2px solid #1E88E5', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: '1.6'}}>
+                {previewContent}
+              </div>
+              <div style={{marginTop: '16px', textAlign: 'right'}}>
+                <button
+                  onClick={() => setShowPreviewModal(false)}
+                  style={{padding: '10px 20px', background: '#1E88E5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'}}
+                >
+                  Bezárás
+                </button>
+              </div>
             </div>
           </div>
         )}
