@@ -284,7 +284,7 @@ ${createForm.issuerPosition}
       <div className="main-content">
         <Navbar />
         <div className="container">
-          <p style={{color: 'white'}}>Hozzáférés megtagadva.</p>
+          <p style={{ color: 'white' }}>Hozzáférés megtagadva.</p>
         </div>
       </div>
     );
@@ -303,21 +303,21 @@ ${createForm.issuerPosition}
 
         {!selectedMember ? (
           /* Tagok listája */
-          <div className="card" style={{maxWidth: '900px', margin: '0 auto'}}>
-            <h2 style={{color: '#1976D2', marginBottom: '16px'}}>Tagok</h2>
+          <div className="card" style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h2 style={{ color: '#1976D2', marginBottom: '16px' }}>Tagok</h2>
             {loading ? <p>Betöltés...</p> : (
-              <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {members.map(member => (
                   <div
                     key={member.id}
                     className="list-item"
                     onClick={() => handleMemberClick(member)}
-                    style={{cursor: 'pointer', padding: '16px', borderRadius: '8px', background: 'rgba(30, 136, 229, 0.05)', transition: 'all 0.2s'}}
+                    style={{ cursor: 'pointer', padding: '16px', borderRadius: '8px', background: 'rgba(30, 136, 229, 0.05)', transition: 'all 0.2s' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(30, 136, 229, 0.15)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'rgba(30, 136, 229, 0.05)'}
                   >
-                    <strong style={{fontSize: '1.1rem', color: '#0D47A1'}}>{member.first_name} {member.last_name}</strong>
-                    <p className="text-secondary" style={{margin: '4px 0 0 0'}}>{member.email}</p>
+                    <strong style={{ fontSize: '1.1rem', color: '#0D47A1' }}>{member.first_name} {member.last_name}</strong>
+                    <p className="text-secondary" style={{ margin: '4px 0 0 0' }}>{member.email}</p>
                   </div>
                 ))}
               </div>
@@ -325,20 +325,20 @@ ${createForm.issuerPosition}
           </div>
         ) : (
           /* Tag részletes adatai */
-          <div style={{maxWidth: '1200px', margin: '0 auto'}}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <button
               className="btn"
               onClick={goBack}
-              style={{marginBottom: '16px', display: 'inline-flex', alignItems: 'center', gap: '8px'}}
+              style={{ marginBottom: '16px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
               </svg>
               Vissza a tagokhoz
             </button>
 
             <div className="profile-layout">
-              <div className="info-panel" style={{gridColumn: '1 / -1'}}>
+              <div className="info-panel" style={{ gridColumn: '1 / -1' }}>
                 <div className="info-card">
                   <h3>Személyes Adatok</h3>
                   <p><strong>Név:</strong> {memberDetails?.name || `${selectedMember.first_name} ${selectedMember.last_name}`}</p>
@@ -349,16 +349,16 @@ ${createForm.issuerPosition}
                 </div>
 
                 <div className="info-card">
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
-                    <h3 style={{margin: 0}}>Igazolások ({certificates.length})</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ margin: 0 }}>Igazolások ({certificates.length})</h3>
                     <button className="btn-add" onClick={openCreateModal}>
                       Új igazolás létrehozása
                     </button>
                   </div>
                   {certificates.length === 0 ? (
-                    <p style={{color: '#666'}}>Még nincsenek igazolások ehhez a taghoz.</p>
+                    <p style={{ color: '#666' }}>Még nincsenek igazolások ehhez a taghoz.</p>
                   ) : (
-                    <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {certificates.map(cert => (
                         <div key={cert.id} className="message-item">
                           <div className="message-item-body">
@@ -368,8 +368,8 @@ ${createForm.issuerPosition}
                               {cert.valid_until && ` | Érvényes: ${new Date(cert.valid_until).toLocaleDateString('hu-HU')}-ig`}
                             </p>
                             {cert.content && (
-                              <div style={{marginTop: '8px', padding: '8px', background: 'rgba(30, 136, 229, 0.05)', borderRadius: '4px', fontSize: '0.9rem'}}>
-                                <p style={{whiteSpace: 'pre-wrap', margin: 0}}>{cert.content}</p>
+                              <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(30, 136, 229, 0.05)', borderRadius: '4px', fontSize: '0.9rem' }}>
+                                <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{cert.content}</p>
                               </div>
                             )}
                           </div>
@@ -390,61 +390,61 @@ ${createForm.issuerPosition}
 
         {/* Létrehozás Modal */}
         {showCreateModal && (
-          <div className="modal-overlay" style={{zIndex: 1000}}>
-            <div className="modal-box" style={{maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto'}}>
+          <div className="modal-overlay" style={{ zIndex: 1000 }}>
+            <div className="modal-box" style={{ maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto' }}>
               <button className="modal-close-btn" onClick={() => setShowCreateModal(false)}>×</button>
 
               {/* Organization Header */}
-              <div style={{textAlign: 'center', marginBottom: '24px', padding: '20px', background: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)', borderRadius: '12px', color: 'white'}}>
-                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '12px'}}>
-                  <div style={{width: '80px', height: '80px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed rgba(255,255,255,0.5)'}}>
+              <div style={{ textAlign: 'center', marginBottom: '24px', padding: '20px', background: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)', borderRadius: '12px', color: 'white' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '12px' }}>
+                  <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed rgba(255,255,255,0.5)' }}>
                     {logoPreview ? (
-                      <img src={logoPreview} alt="Logo" style={{width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px'}} />
+                      <img src={logoPreview} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
                     ) : (
-                      <span style={{fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)'}}>Logo</span>
+                      <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>Logo</span>
                     )}
                   </div>
                   <div>
-                    <h2 style={{margin: 0, fontSize: '1.8rem', fontWeight: 'bold'}}>Balatonmáriai Vizisport Egyesület</h2>
-                    <p style={{margin: '4px 0 0 0', fontSize: '0.95rem', opacity: 0.9}}>Igazolás Generátor</p>
+                    <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 'bold' }}>Balatonmáriai Vizisport Egyesület</h2>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.95rem', opacity: 0.9 }}>Igazolás Generátor</p>
                   </div>
                 </div>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleLogoSelect}
-                  style={{display: 'none'}}
+                  style={{ display: 'none' }}
                   id="logo-upload"
                 />
-                <label htmlFor="logo-upload" style={{display: 'inline-block', padding: '6px 12px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', border: '1px solid rgba(255,255,255,0.3)'}}>
+                <label htmlFor="logo-upload" style={{ display: 'inline-block', padding: '6px 12px', background: 'rgba(255,255,255,0.2)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', border: '1px solid rgba(255,255,255,0.3)' }}>
                   Logo feltöltése
                 </label>
               </div>
 
               <form onSubmit={handleCreate}>
                 {/* Mode Selector */}
-                <div style={{marginBottom: '24px', padding: '16px', background: 'rgba(30, 136, 229, 0.05)', borderRadius: '12px'}}>
-                  <label style={{display: 'block', marginBottom: '12px', fontWeight: 'bold', color: '#1565C0'}}>Típus:</label>
-                  <div style={{display: 'flex', gap: '16px'}}>
-                    <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px 20px', background: mode === 'personal' ? '#1E88E5' : 'white', color: mode === 'personal' ? 'white' : '#333', borderRadius: '8px', border: '2px solid #1E88E5', transition: 'all 0.3s'}}>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(30, 136, 229, 0.05)', borderRadius: '12px' }}>
+                  <label style={{ display: 'block', marginBottom: '12px', fontWeight: 'bold', color: '#1565C0' }}>Típus:</label>
+                  <div style={{ display: 'flex', gap: '16px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px 20px', background: mode === 'personal' ? '#1E88E5' : 'white', color: mode === 'personal' ? 'white' : '#333', borderRadius: '8px', border: '2px solid #1E88E5', transition: 'all 0.3s' }}>
                       <input
                         type="radio"
                         name="mode"
                         value="personal"
                         checked={mode === 'personal'}
                         onChange={() => handleModeChange('personal')}
-                        style={{marginRight: '8px'}}
+                        style={{ marginRight: '8px' }}
                       />
                       Személyes
                     </label>
-                    <label style={{display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px 20px', background: mode === 'group' ? '#1E88E5' : 'white', color: mode === 'group' ? 'white' : '#333', borderRadius: '8px', border: '2px solid #1E88E5', transition: 'all 0.3s'}}>
+                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px 20px', background: mode === 'group' ? '#1E88E5' : 'white', color: mode === 'group' ? 'white' : '#333', borderRadius: '8px', border: '2px solid #1E88E5', transition: 'all 0.3s' }}>
                       <input
                         type="radio"
                         name="mode"
                         value="group"
                         checked={mode === 'group'}
                         onChange={() => handleModeChange('group')}
-                        style={{marginRight: '8px'}}
+                        style={{ marginRight: '8px' }}
                       />
                       Csoport
                     </label>
@@ -452,91 +452,91 @@ ${createForm.issuerPosition}
                 </div>
 
                 {/* Personal Data Section */}
-                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0', opacity: mode === 'group' ? 0.5 : 1}}>
-                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Személyes Adatok</h3>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0', opacity: mode === 'group' ? 0.5 : 1 }}>
+                  <h3 style={{ marginTop: 0, marginBottom: '16px', color: '#1565C0' }}>Személyes Adatok</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Név *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Név *</label>
                       <input
                         className="form-input"
                         value={createForm.personName}
-                        onChange={e => setCreateForm({...createForm, personName: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, personName: e.target.value })}
                         disabled={mode === 'group'}
                         required={mode === 'personal'}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Születési dátum *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Születési dátum *</label>
                       <input
                         className="form-input"
                         type="date"
                         value={createForm.birthDate}
-                        onChange={e => setCreateForm({...createForm, birthDate: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, birthDate: e.target.value })}
                         disabled={mode === 'group'}
                         required={mode === 'personal'}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Születési hely *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Születési hely *</label>
                       <input
                         className="form-input"
                         value={createForm.birthPlace}
-                        onChange={e => setCreateForm({...createForm, birthPlace: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, birthPlace: e.target.value })}
                         disabled={mode === 'group'}
                         required={mode === 'personal'}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Anyja neve *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Anyja neve *</label>
                       <input
                         className="form-input"
                         value={createForm.motherName}
-                        onChange={e => setCreateForm({...createForm, motherName: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, motherName: e.target.value })}
                         disabled={mode === 'group'}
                         required={mode === 'personal'}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Személyi ig. szám</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Személyi ig. szám</label>
                       <input
                         className="form-input"
                         value={createForm.idNumber}
-                        onChange={e => setCreateForm({...createForm, idNumber: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, idNumber: e.target.value })}
                         disabled={mode === 'group'}
                         placeholder="Opcionális"
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Lakcím *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Lakcím *</label>
                       <input
                         className="form-input"
                         value={createForm.address}
-                        onChange={e => setCreateForm({...createForm, address: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, address: e.target.value })}
                         disabled={mode === 'group'}
                         required={mode === 'personal'}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Group Selection Section */}
-                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0', opacity: mode === 'personal' ? 0.5 : 1}}>
-                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Csoport Kiválasztása</h3>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0', opacity: mode === 'personal' ? 0.5 : 1 }}>
+                  <h3 style={{ marginTop: 0, marginBottom: '16px', color: '#1565C0' }}>Csoport Kiválasztása</h3>
                   <div>
-                    <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Válasszon csoportot *</label>
+                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Válasszon csoportot *</label>
                     <select
                       className="form-input"
                       value={selectedGroup || ''}
                       onChange={e => setSelectedGroup(e.target.value)}
                       disabled={mode === 'personal'}
                       required={mode === 'group'}
-                      style={{width: '100%'}}
+                      style={{ width: '100%' }}
                     >
                       <option value="">-- Válasszon --</option>
                       {groups.map(group => (
@@ -547,17 +547,17 @@ ${createForm.issuerPosition}
                 </div>
 
                 {/* Certificate Data Section */}
-                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0'}}>
-                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Igazolás Adatok</h3>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
-                    <div style={{gridColumn: '1 / -1'}}>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Igazolás típusa *</label>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0' }}>
+                  <h3 style={{ marginTop: 0, marginBottom: '16px', color: '#1565C0' }}>Igazolás Adatok</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Igazolás típusa *</label>
                       <select
                         className="form-input"
                         value={createForm.certificateType}
-                        onChange={e => setCreateForm({...createForm, certificateType: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, certificateType: e.target.value })}
                         required
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       >
                         <option value="">-- Válasszon --</option>
                         <option value="membership">Tagság</option>
@@ -568,98 +568,98 @@ ${createForm.issuerPosition}
                       </select>
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Kiállítás dátuma *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Kiállítás dátuma *</label>
                       <input
                         className="form-input"
                         type="date"
                         value={createForm.issueDate}
-                        onChange={e => setCreateForm({...createForm, issueDate: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, issueDate: e.target.value })}
                         required
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Érvényes eddig</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Érvényes eddig</label>
                       <input
                         className="form-input"
                         type="date"
                         value={createForm.validUntil}
-                        onChange={e => setCreateForm({...createForm, validUntil: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, validUntil: e.target.value })}
                         placeholder="Opcionális"
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
-                    <div style={{gridColumn: '1 / -1'}}>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Kiállítás célja *</label>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Kiállítás célja *</label>
                       <input
                         className="form-input"
                         value={createForm.purpose}
-                        onChange={e => setCreateForm({...createForm, purpose: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, purpose: e.target.value })}
                         required
                         placeholder="pl. munkáltatónak, iskolának, stb."
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
-                    <div style={{gridColumn: '1 / -1'}}>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>További megjegyzések</label>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>További megjegyzések</label>
                       <textarea
                         className="form-input"
                         rows={3}
                         value={createForm.additionalNotes}
-                        onChange={e => setCreateForm({...createForm, additionalNotes: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, additionalNotes: e.target.value })}
                         placeholder="Opcionális"
-                        style={{width: '100%', resize: 'vertical'}}
+                        style={{ width: '100%', resize: 'vertical' }}
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Issuer Data Section */}
-                <div style={{marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0'}}>
-                  <h3 style={{marginTop: 0, marginBottom: '16px', color: '#1565C0'}}>Kiállító Adatai</h3>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #E0E0E0' }}>
+                  <h3 style={{ marginTop: 0, marginBottom: '16px', color: '#1565C0' }}>Kiállító Adatai</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Kiállító neve *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Kiállító neve *</label>
                       <input
                         className="form-input"
                         value={createForm.issuerName}
-                        onChange={e => setCreateForm({...createForm, issuerName: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, issuerName: e.target.value })}
                         required
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                     <div>
-                      <label style={{display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600'}}>Beosztás *</label>
+                      <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9rem', fontWeight: '600' }}>Beosztás *</label>
                       <input
                         className="form-input"
                         value={createForm.issuerPosition}
-                        onChange={e => setCreateForm({...createForm, issuerPosition: e.target.value})}
+                        onChange={e => setCreateForm({ ...createForm, issuerPosition: e.target.value })}
                         required
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Button Group */}
-                <div style={{display: 'flex', gap: '12px', justifyContent: 'flex-end'}}>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                   <button
                     type="button"
                     onClick={handleReset}
-                    style={{padding: '12px 24px', background: '#757575', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'}}
+                    style={{ padding: '12px 24px', background: '#757575', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s' }}
                   >
                     Visszaállítás
                   </button>
                   <button
                     type="button"
                     onClick={handlePreview}
-                    style={{padding: '12px 24px', background: '#1E88E5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'}}
+                    style={{ padding: '12px 24px', background: '#1E88E5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s' }}
                   >
                     Előnézet
                   </button>
                   <button
                     type="submit"
-                    style={{padding: '12px 24px', background: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s'}}
+                    style={{ padding: '12px 24px', background: 'linear-gradient(135deg, #1E88E5 0%, #1565C0 100%)', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s' }}
                   >
                     Generálás
                   </button>
@@ -671,17 +671,17 @@ ${createForm.issuerPosition}
 
         {/* Preview Modal */}
         {showPreviewModal && (
-          <div className="modal-overlay" style={{zIndex: 1001}}>
-            <div className="modal-box" style={{maxWidth: '600px'}}>
+          <div className="modal-overlay" style={{ zIndex: 1001 }}>
+            <div className="modal-box" style={{ maxWidth: '600px' }}>
               <button className="modal-close-btn" onClick={() => setShowPreviewModal(false)}>×</button>
-              <h2 style={{marginBottom: '16px', color: '#1565C0'}}>Előnézet</h2>
-              <div style={{padding: '20px', background: 'white', borderRadius: '8px', border: '2px solid #1E88E5', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: '1.6'}}>
+              <h2 style={{ marginBottom: '16px', color: '#1565C0' }}>Előnézet</h2>
+              <div style={{ padding: '20px', background: 'white', borderRadius: '8px', border: '2px solid #1E88E5', whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.9rem', lineHeight: '1.6' }}>
                 {previewContent}
               </div>
-              <div style={{marginTop: '16px', textAlign: 'right'}}>
+              <div style={{ marginTop: '16px', textAlign: 'right' }}>
                 <button
                   onClick={() => setShowPreviewModal(false)}
-                  style={{padding: '10px 20px', background: '#1E88E5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer'}}
+                  style={{ padding: '10px 20px', background: '#1E88E5', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}
                 >
                   Bezárás
                 </button>
