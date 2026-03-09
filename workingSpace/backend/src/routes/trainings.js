@@ -120,4 +120,97 @@ router.delete('/:id', authenticate, authorize('admin', 'coach'), async (req, res
   }
 });
 
+// GET /api/trainings/stats/:userId - Személyenkénti edzés statisztika
+router.get('/stats/:userId', authenticate, async (req, res, next) => {
+  try {
+    const { sql, poolPromise } = require('../config/database');
+    const pool = await poolPromise;
+    const userId = parseInt(req.params.userId);
+
+    // Összes training ahol a user résztvevő volt
+    const result = await pool.request()
+      .input('userId', sql.Int, userId)
+      .query(`
+        SELECT
+          e.id,
+          e.title,
+          e.event_date,
+          e.location,
+          e.description,
+          ep.status,
+          CASE
+            WHEN ep.status IN ('confirmed', 'attended') THEN 1
+            ELSE 0
+          END as attended
+        FROM events e
+        LEFT JOIN event_participants ep ON e.id = ep.event_id AND ep.user_id = @userId
+        WHERE e.event_type = 'training'
+        ORDER BY e.event_date DESC
+      `);
+
+    const trainings = result.recordset;
+    const now = new Date();
+
+    // Csak azok az edzések amihez a user hozzá volt rendelve (van event_participants bejegyzés)
+    const userTrainings = trainings.filter(t => t.status !== null);
+
+    // Statisztikák számítása
+    const totalTrainings = userTrainings.length;
+    const attendedTrainings = userTrainings.filter(t => t.attended === 1).length;
+    const upcomingTrainings = userTrainings.filter(t => new Date(t.event_date) > now).length;
+    const attendanceRate = totalTrainings > 0
+      ? Math.round((attendedTrainings / totalTrainings) * 100)
+      : 0;
+
+    res.json({
+      total_trainings: totalTrainings,
+      attended_trainings: attendedTrainings,
+      attendance_rate: attendanceRate,
+      upcoming_trainings: upcomingTrainings,
+      trainings: userTrainings.map(t => ({
+        id: t.id,
+        title: t.title,
+        event_date: t.event_date,
+        location: t.location,
+        description: t.description,
+        attended: t.attended === 1
+      }))
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET /api/trainings/log - Edzésnapló (lejárt edzések részletekkel)
+router.get('/log', authenticate, authorize('admin'), async (req, res, next) => {
+  try {
+    const { sql, poolPromise } = require('../config/database');
+    const pool = await poolPromise;
+    const now = new Date();
+
+    const result = await pool.request()
+      .input('now', sql.DateTime2, now)
+      .query(`
+        SELECT
+          e.id,
+          e.title,
+          e.description,
+          e.event_date,
+          e.location,
+          e.created_by as creator_id,
+          u.name as creator_name,
+          (SELECT COUNT(*) FROM event_participants ep WHERE ep.event_id = e.id) as participants_count,
+          e.target_group_id
+        FROM events e
+        LEFT JOIN users u ON e.created_by = u.id
+        WHERE e.event_type = 'training' AND e.event_date < @now
+        ORDER BY e.event_date DESC
+      `);
+
+    res.json(result.recordset);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
