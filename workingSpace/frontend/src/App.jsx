@@ -64,7 +64,19 @@ function App() {
               <Trainings />
             </PrivateRoute>
           } />
-          
+
+          <Route path="/trainings/stats" element={
+            <PrivateRoute>
+              <TrainingsStats />
+            </PrivateRoute>
+          } />
+
+          <Route path="/trainings/log" element={
+            <AdminRoute>
+              <TrainingsLog />
+            </AdminRoute>
+          } />
+
           <Route path="/messages" element={
             <PrivateRoute>
               <Messages />

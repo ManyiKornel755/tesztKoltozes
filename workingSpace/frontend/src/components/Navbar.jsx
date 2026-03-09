@@ -67,15 +67,17 @@ const Navbar = () => {
             </div>
             {trainingsDropdownOpen && (
               <div className="submenu">
-                <Link to="/trainings/create" className="submenu-item" onClick={closeMenu}>
-                  Edzések létrehozása
+                <Link to="/trainings" className="submenu-item" onClick={closeMenu}>
+                  Edzések kezelése
                 </Link>
                 <Link to="/trainings/stats" className="submenu-item" onClick={closeMenu}>
-                  Statisztika
+                  Edzés statisztika
                 </Link>
-                <Link to="/trainings/log" className="submenu-item" onClick={closeMenu}>
-                  Edzésnapló
-                </Link>
+                {isAdmin() && (
+                  <Link to="/trainings/log" className="submenu-item" onClick={closeMenu}>
+                    Edzésnapló
+                  </Link>
+                )}
               </div>
             )}
           </div>
